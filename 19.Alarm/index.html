@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Griffy&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <h2>Alarm Clock</h2>
+    <input
+      type="datetime-local"
+      class="inpDate"
+      onchange="handleChange(event); return false;"
+    />
+    <div class="disp-cont">
+      <div class="disp-bar"></div>
+      <div class="disp-dte days"></div>
+      <div class="disp-dte hours"></div>
+      <div class="disp-dte mins"></div>
+      <div class="disp-dte secs"></div>
+    </div>
+    <div class="countdown-text"></div>
+    <input type="button" value="Stop Alarm" class="btnAlarm btnAnimate" />
+    <script>
+      let inpDate = document.querySelector(".inpDate");
+      let countText = document.querySelector(".countdown-text");
+      var sound = new Audio("../sounds/AnnabellesMusicBox.mp3");
+
+      let days, hours, mins, secs;
+      let userSelect = false;
+      let datePick, delta;
+
+      let currentDate = Date.now();
+      console.log("Current Date = ", currentDate);
+      let newYear = new Date("1-Jan-2021");
+
+      function handleChange(evt) {
+        datePick = new Date(evt.target.value);
+        userSelect = true;
+        console.log("Date has changed : ", datePick);
+        countdown();
+      }
+
+      function countdown() {
+        var intervalID = setInterval(() => {
+          if (!userSelect) {
+            delta = (newYear.getTime() - Date.now()) / 1000;
+            countText.innerHTML = "for new year !!";
+          } else {
+            let futureDate = datePick.getTime();
+            if (futureDate - Date.now() <= 0) {
+              clearInterval(intervalID);
+              days = hours = mins = secs = 0;
+            }
+            delta = Math.abs(futureDate - Date.now()) / 1000;
+            countText.innerHTML = "for a special event !!";
+            userSelect = true;
+          }
+
+          days = Math.floor(delta / 86400);
+          document.querySelector(".days").innerHTML =
+            days + '<span style="font-size:1rem">days</span>';
+
+          delta = delta - days * 86400;
+          hours = Math.floor((delta / 3600) % 24);
+          document.querySelector(".hours").innerHTML =
+            hours + '<span style="font-size:1rem">hours</span>';
+
+          delta -= hours * 3600;
+          mins = Math.floor((delta / 60) % 60);
+          document.querySelector(".mins").innerHTML =
+            mins + '<span style="font-size:1rem">mins</span>';
+
+          delta -= mins * 60;
+          secs = Math.floor(delta % 60);
+          document.querySelector(".secs").innerHTML =
+            secs + '<span style="font-size:1rem">secs</span>';
+
+          if (days === 0 && hours === 0 && mins === 0 && secs === 0) {
+            clearInterval(intervalID);
+            sound.play();
+          }
+        }, 1000);
+      }
+
+      window.addEventListener("DOMContentLoaded", event => {
+        console.log("DOM Fully loaded and parsed");
+
+        userSelect = false;
+
+        var dte = new Date();
+        dte.setHours(dte.getHours() + 5);
+        dte.setMinutes(dte.getMinutes() + 30);
+        var iso = dte.toISOString();
+        var minDate = iso.substring(0, iso.length - 8);
+        inpDate.min = minDate;
+        inpDate.value = minDate;
+
+        countdown();
+      });
+
+      var btn = document.querySelector(".btnAlarm");
+
+      btn.addEventListener("click", () => {
+        userSelect = false;
+        sound.pause();
+        sound.currentTime = 0;
+        console.log("click");
+        countdown();
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>ASCII Finder</title>
+    <style>
+      .frmContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      h1 {
+        text-align: center;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+      }
+      form {
+        margin: 0 auto;
+        text-align: center;
+        align-content: center;
+      }
+      input,
+      label {
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        font-size: 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frmContainer">
+      <h1>ASCII Finder</h1>
+      <center>
+        <label for="userInput">Enter A String: </label>
+        <input type="text" id="userInput" /> <br /><br />
+        <input type="submit" id="btnSubmit" disabled />
+      </center>
+    </div>
+    <script>
+      var str = document.querySelector("#userInput");
+      var btn = document.querySelector("#btnSubmit");
+
+      str.addEventListener("keydown", () => {
+        if (str.value) btn.disabled = false;
+        else btn.disabled = true;
+      });
+
+      btn.addEventListener("click", () => {
+        var out = "";
+        var str = document.querySelector("#userInput");
+        console.log("Hello", str);
+        var str = str.value;
+        if (str) {
+          for (idx in str) {
+            out += ` ${str[idx]} = ${str.charCodeAt(idx)} ,`;
+          }
+          alert(out);
+        } else {
+          console.log("No Input");
+        }
+        console.log(out);
+      });
+    </script>
+  </body>
+</html>

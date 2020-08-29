@@ -1,0 +1,151 @@
+body {
+  background: rgb(42, 80, 95);
+  background: radial-gradient(
+    circle,
+    rgba(42, 80, 95, 1) 0%,
+    rgba(16, 33, 41, 1) 100%
+  );
+}
+h2 {
+  text-align: center;
+  color: #ccc;
+  font-size: 2rem;
+  font-family: "Griffy", cursive;
+  letter-spacing: 5px;
+}
+.inpDate {
+  background: rgb(42, 80, 95);
+  color: #ccc;
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 6rem;
+  font-size: 1.8rem;
+  font-family: "Griffy", cursive;
+  letter-spacing: 4px;
+  border: #002433;
+  border-radius: 5px;
+  box-shadow: 2px 3px 4px rgb(42, 80, 95), -2px 3px 4px rgb(42, 80, 95),
+    2px -3px 4px rgb(42, 80, 95), -2px -3px 4px rgb(42, 80, 95);
+  outline: none;
+}
+.disp-cont {
+  margin: 0 auto;
+  display: flex;
+  max-width: 720px;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+
+.disp-dte {
+  flex: 0 1 calc(25% - 4rem);
+  padding: 0.5rem;
+  background: linear-gradient(#0f2027, #203a43, #2c5364);
+  color: #ccc;
+  font-family: "Griffy", cursive;
+  letter-spacing: 2px;
+  font-size: 3rem;
+  text-align: center;
+  border-radius: 5px;
+  box-shadow: 2px 3px 4px grey;
+}
+
+.countdown-text {
+  margin: 2rem auto;
+  text-align: center;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-size: 2rem;
+  font-family: "Griffy", cursive;
+  color: #ccc;
+  font-style: oblique;
+}
+.btnAlarm {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding: 0.5rem;
+  background: linear-gradient(#203a43, #2c5364, #203a43);
+  color: rgb(78, 99, 122);
+  font-size: 1rem;
+  text-align: center;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 1px 1px 1px #203a43;
+  outline: none;
+}
+.btnAnimate {
+  /* transition: all 0.2s linear; */
+  animation: bounce 2s infinite;
+}
+.btnAnimate:active {
+  transform: scale(0.1);
+  box-shadow: 2px 3px 4px grey;
+}
+.btnAnimate:hover {
+  /* transform: scale(1.3); */
+  transform: translate(0, -100px) scale(0.6);
+}
+
+@keyframes bounce {
+  0% {
+    transform: translateX(6px);
+  }
+  5% {
+    transform: translateX(12px);
+  }
+  10% {
+    transform: translateX(30px);
+  }
+  15% {
+    transform: translateX(50px);
+  }
+  20% {
+    transform: translateX(75px);
+  }
+  25% {
+    transform: translateX(100px);
+  }
+  30% {
+    transform: translateX(75px);
+  }
+  35% {
+    transform: translateX(50px);
+  }
+  40% {
+    transform: translateX(25px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+  55% {
+    transform: translateX(-10px);
+  }
+  60% {
+    transform: translateX(-30px);
+  }
+  65% {
+    transform: translateX(-50px);
+  }
+  70% {
+    transform: translateX(-75px);
+  }
+  75% {
+    transform: translateX(-100px);
+  }
+  80% {
+    transform: translateX(-75px);
+  }
+  85% {
+    transform: translateX(-50px);
+  }
+  90% {
+    transform: translateX(-25px);
+  }
+  95% {
+    transform: translateX(-10px);
+  }
+  100% {
+    transform: translateX(5px);
+  }
+}

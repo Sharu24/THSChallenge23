@@ -1,0 +1,85 @@
+body {
+  background: -webkit-gradient(
+      linear,
+      left top,
+      left bottom,
+      from(rgb(163, 161, 161)),
+      to(#5c5e57)
+    )
+    fixed;
+}
+h1 {
+  font-family: "Libre Barcode 128 Text", cursive;
+  font-family: "Russo One", sans-serif;
+  font-size: 2.5rem;
+  width: 300px;
+  text-align: center;
+  color: #2b2b2b;
+  letter-spacing: 2px;
+}
+.fromSys {
+  font-family: "Russo One", sans-serif;
+  font-size: 1rem;
+  color: #2b2b2b;
+  margin-right: 1rem;
+}
+
+input[type="radio"] {
+  /* display: none; */
+  /* remove standard background appearance */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  /* create custom radiobutton appearance */
+  display: inline-block;
+  /* width: 25px; */
+  /* height: 25px; */
+  padding: 6px;
+  /* background-color only for content */
+  /* background-clip: content-box; */
+  border: 2px solid #bbbbbb;
+  background-color: #e7e6e7;
+  border-radius: 50%;
+}
+
+/* appearance for checked radiobutton */
+input[type="radio"]:checked {
+  background-color: #2b2b2b;
+}
+input[type="radio"]:active {
+  background-color: #2b2b2b;
+}
+#userInput {
+  margin: 1.2rem auto;
+  font-family: "Russo One", sans-serif;
+  padding: 0.125rem 2rem;
+  outline: none;
+}
+#btnConvert {
+  margin: 0.2rem auto;
+  font-family: "Russo One", sans-serif;
+  padding: 0.2rem 9rem;
+  border-radius: 4px;
+  outline: #5c5e57;
+  /* background-color: #2b2b2b;  */
+  background-color: #5c5e57;
+  color: rgb(216, 215, 215);
+  letter-spacing: 2px;
+}
+table {
+  margin: 1rem auto;
+  font-family: "Russo One", sans-serif;
+}
+th,
+tr,
+td {
+  border: 1px solid grey;
+  border-radius: 4px;
+  padding: 0.2rem 0.8rem;
+  background-color: rgb(216, 215, 215);
+}
+th {
+  background-color: rgb(216, 215, 215);
+  color: #5c5e57;
+  letter-spacing: 1px;
+}

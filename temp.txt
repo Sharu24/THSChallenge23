@@ -1,0 +1,22 @@
+      @keyframes bounce {
+            0%   { transform: translateX(6px); }
+            5%   { transform: translateX(8px); }
+            10%  { transform: translateX(12px); }
+            15%  { transform: translateX(20px); }
+            20%  { transform: translateX(38px); }
+            25%  { transform: translateX(72px); }
+            30%  { transform: translateX(100px); }
+            35%  { transform: translateX(152px); }
+            40%  { transform: translateX(154px) }
+            50%  { transform: translateX(176px)  }
+            55%  { transform: translateX(162px)  }
+            60%  { transform: translateX(138px)  }
+            65%  { transform: translateX(110px); }
+            70%  { transform: translateX(72px); }
+            75%  { transform: translateX(38px); }
+            80%  { transform: translateX(20px); }
+            85%  { transform: translateX(12px); }
+            90%  { transform: translateX(8px); }
+            95%  { transform: translateX(5px); }
+            100% { transform: translateX(5px); }
+        }

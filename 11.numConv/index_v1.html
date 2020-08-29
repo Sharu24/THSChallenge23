@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Number Converter</title>
+    <style>
+      h1 {
+        margin: 0 1rem;
+      }
+      .from {
+        display: inline-block;
+        margin: 0 1rem;
+      }
+      .to {
+        display: inline-block;
+        margin: 0 1rem;
+      }
+      .convCont {
+        margin: 0 1rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Number Converter</h1>
+    <section>
+      <div class="from">
+        <p>From</p>
+        <select name="fromSystem" id="fromSystem">
+          <option value="binary" selected>Binary</option>
+          <option value="decimal">Decimal</option>
+          <option value="hexa">HexaDecimal</option>
+        </select>
+      </div>
+      <div class="to">
+        <p>To</p>
+        <select name="toSystem" id="toSystem">
+          <option value="binary">Binary</option>
+          <option value="decimal" selected>Decimal</option>
+          <option value="hexa">HexaDecimal</option>
+        </select>
+      </div>
+    </section>
+    <br />
+    <div class="convCont">
+      <label for="userInput">Enter the Number</label> <br /><br />
+      <input type="text" name="userInput" id="userInput" />
+      <br /><br />
+      <input
+        type="button"
+        name="btnConvert"
+        value="Convert"
+        onclick="convertNum(); return false"
+      />
+      <br />
+      <p></p>
+      <textarea name="displayNum" id="result" cols="30" rows="10"></textarea>
+    </div>
+    <script>
+      window.addEventListener("load", () => {});
+
+      var fromSys = document.getElementById("fromSystem");
+      var toSys = document.querySelector("#toSystem");
+      var input = document.querySelector("#userInput");
+
+      fromSys.addEventListener("change", e => {
+        console.log(`e.target.value = ${e.target.value}`);
+      });
+
+      input.addEventListener("keydown", e => {
+        console.log(e.keyCode);
+
+        if (
+          fromSys.value === "binary" &&
+          e.keyCode !== 48 &&
+          e.keyCode !== 49 &&
+          e.keyCode !== 8
+        )
+          e.preventDefault();
+      });
+
+      function decimalToOthers(num, sys) {
+        var hex = { A: 10, B: 11, C: 12, D: 13, E: 14, F: 15 };
+        var eval;
+
+        if (sys === "binary") base = 2;
+        else if (sys === "octa") base = 8;
+        else if (sys === "hexa") base = 16;
+
+        function fromDecimal(val, eval) {
+          if (val === 0) return "";
+          else {
+            eval = val % base;
+            var idx = Object.values(hex).indexOf(eval);
+            eval = idx === -1 ? eval : Object.keys(hex)[idx];
+            console.log(idx, eval);
+            return fromDecimal(Math.floor(val / base), eval) + "" + eval;
+          }
+        }
+        return fromDecimal(num);
+      }
+
+      function othersToDecimal(num, sys) {
+        var base = 10,
+          hex = { A: 10, B: 11, C: 12, D: 13, E: 14, F: 15 };
+
+        if (sys === "binary") base = 2;
+        else if (sys === "octa") base = 8;
+        else if (sys === "hexa") base = 16;
+
+        var arr = num.split("").map(ele => {
+          return Object.keys(hex).indexOf(ele) !== -1 ? hex[ele] : Number(ele);
+        });
+
+        function toDecimal(arr, base, count = 0) {
+          if (!arr.length) return 0;
+          else {
+            return arr.pop() * base ** count + toDecimal(arr, base, ++count);
+          }
+        }
+        return toDecimal(arr, base);
+      }
+
+      //   function toDecimal(val, base, count = 0) {
+      //     if (val === 0) return 0;
+      //     else
+      //       return (
+      //         (val % 10) * base ** count +
+      //         toDecimal(Math.floor(val / 10), base, ++count)
+      //       );
+      //   }
+
+      function convertNum() {
+        var output = document.querySelector("#result");
+
+        // console.log(fromSys.value);
+        // console.log(toSys.value);
+        // console.log(input.value);
+
+        if (fromSys.value === toSys.value) {
+          output.value = input.value;
+        } else if (toSys.value === "decimal") {
+          output.value = othersToDecimal(input.value, fromSys.value);
+        } else if (fromSys.value === "decimal") {
+          output.value = decimalToOthers(input.value, toSys.value);
+        } else {
+          var dec = othersToDecimal(input.value, fromSys.value);
+          output.value = decimalToOthers(dec, toSys.value);
+        }
+      }
+    </script>
+  </body>
+</html>

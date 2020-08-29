@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Libre+Barcode+128+Text&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Number Converter</title>
+  </head>
+  <body>
+    <center>
+      <h1>Number System Conversion</h1>
+      <input type="radio" name="fromSys" id="fromSys" value="binary" />
+      <label for="fromSys" class="fromSys">Binary</label>
+      <input type="radio" name="fromSys" id="fromSys" value="decimal" />
+      <label for="fromSys" class="fromSys">Decimal</label>
+      <input type="radio" name="fromSys" id="fromSys" value="hexadecimal" />
+      <label for="fromSys" class="fromSys">Hexadecimal</label>
+      <br />
+      <input
+        type="text"
+        name="userInput"
+        id="userInput"
+        size="40"
+        placeholder="Please enter the Number to convert"
+        autocomplete="off"
+        disabled
+      />
+      <br />
+      <input
+        type="button"
+        name="btnConvert"
+        value="Convert"
+        id="btnConvert"
+        disabled
+        onclick="mapOtherSystem(); return false"
+      />
+      <br />
+      <div class="output">
+        <table title="Number Conversion">
+          <tr>
+            <th scope="row">Binary</th>
+            <td width="60%" id="oBin"></td>
+          </tr>
+          <tr>
+            <th scope="row">Decimal</th>
+            <td width="60%" id="oDec"></td>
+          </tr>
+          <tr>
+            <th scope="row">Hexadecimal</th>
+            <td width="60%" id="oHex"></td>
+          </tr>
+        </table>
+      </div>
+    </center>
+    <br />
+    <script src="./index.js"></script>
+  </body>
+</html>

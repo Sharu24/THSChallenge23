@@ -1,0 +1,32 @@
+{
+  "name": "9.challenges",
+  "version": "1.0.0",
+  "description": "",
+  "main": "1.primeAm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "01": "node ./01.primeAm/",
+    "03": "node ./03.multipleOf11/",
+    "05": "node ./05.xorCipher/",
+    "06": "node ./06.checkPrime/",
+    "07": "node ./07.splitEO/",
+    "10": "node ./10.bubbleSort/",
+    "11": "node ./11.numConv/",
+    "12": "node ./12.magix/",
+    "13": "node ./13.series-1/",
+    "14": "node ./14.Identity/",
+    "15": "node ./15.matOddEven/",
+    "16": "node ./16.pattern/",
+    "17": "node ./17.series-2/",
+    "18": "node ./18.series-3/",
+    "20": "node ./20.mul10/",
+    "21": "node ./21.mul3half/",
+    "22": "node ./22.rotateBits/",
+    "23": "node ./23.duplicate/"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "readline-sync": "^1.4.10"
+  }
+}
