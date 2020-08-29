@@ -9,36 +9,7 @@ Note : Try adding audio effects
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Document</title>
-    <style>
-      center {
-        margin-top: 10vh;
-        font-size: 2.4rem;
-      }
-      h1 {
-        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
-          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
-        text-shadow: 1px 2px 2px rgb(63, 22, 22), -1px 2px 2px rgb(63, 22, 22);
-      }
-      .sWatchLbl {
-        font-size: 2rem;
-        text-shadow: 1px 0px 1px rgb(63, 22, 22);
-      }
-      input {
-        font-size: 2rem;
-        text-align: center;
-        border: 1px solid grey;
-        border-radius: 4px;
-        box-shadow: 1px 2px 3px rgb(63, 22, 22);
-      }
-      .btn {
-        outline: none;
-      }
-      .btn:active {
-        outline: none;
-        background: #000000;
-        color: #fff;
-      }
-    </style>
+    <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <!-- 
@@ -68,84 +39,6 @@ Note : Try adding audio effects
         <input type="button" class="btn" name="reset" value="Reset" />
       </div>
     </center>
-    <script>
-      var intervalId;
-      var audio1 = new Audio("../sounds/tick.wav");
-      var audio2 = new Audio("../sounds/alarm3.wav");
-
-      window.addEventListener("DOMContentLoaded", () => {
-        var btn = document.querySelectorAll(".btn");
-        var sWatch = document.querySelectorAll(".time");
-
-        btn[1].disabled = btn[2].disabled = true;
-
-        function handleControls(action) {
-          if (action === "start") {
-            var hh = Number(sWatch[0].value);
-            var mi = Number(sWatch[1].value);
-            var ss = Number(sWatch[2].value);
-
-            console.log(hh, mi, ss);
-            if (hh === 0 && mi === 0 && ss === 0) {
-              btn[0].disabled = false;
-              btn[1].disabled = true;
-              sWatch[0].disabled = sWatch[1].disabled = sWatch[2].disabled = false;
-            } else {
-              btn[0].disabled = true;
-              btn[1].disabled = btn[2].disabled = false;
-              sWatch[0].disabled = sWatch[1].disabled = sWatch[2].disabled = true;
-              //
-              intervalId = setInterval(() => {
-                console.log("Started, Interval ID = ", intervalId);
-                console.log(sWatch[0].value);
-                audio1.play();
-
-                if (Number(sWatch[2].value)) {
-                  --sWatch[2].value;
-                } else if (Number(sWatch[1].value)) {
-                  --sWatch[1].value;
-                  sWatch[2].value = 59;
-                } else if (Number(sWatch[0].value)) {
-                  sWatch[1].value = 59;
-                } else {
-                  console.log("Started, Interval Id = ", intervalId);
-                  clearInterval(intervalId);
-                  btn[0].disabled = false;
-                  btn[1].disabled = btn[2].disabled = true;
-                  sWatch[0].disabled = sWatch[1].disabled = sWatch[2].disabled = false;
-                  audio2.play();
-                }
-              }, 1000);
-            }
-          } else if (action === "pause") {
-            console.log("Paused, Interval ID = ", intervalId);
-            btn[0].disabled = false;
-            btn[1].disabled = true;
-            clearInterval(intervalId);
-          } else if (action === "reset") {
-            console.log(intervalId);
-            clearInterval(intervalId);
-            btn[0].disabled = false;
-            btn[1].disabled = true;
-            sWatch[0].value = 0;
-            sWatch[1].value = 0;
-            sWatch[2].value = 0;
-            sWatch[0].disabled = sWatch[1].disabled = sWatch[2].disabled = false;
-          }
-        }
-
-        btn[0].addEventListener("click", evt => {
-          handleControls("start");
-        });
-
-        btn[1].addEventListener("click", () => {
-          handleControls("pause");
-        });
-
-        btn[2].addEventListener("click", () => {
-          handleControls("reset");
-        });
-      });
-    </script>
+    <script src="./index.js"></script>
   </body>
 </html>
