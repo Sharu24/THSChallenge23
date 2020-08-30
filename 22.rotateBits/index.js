@@ -33,10 +33,10 @@ do {
   dir = rls.question("Enter the rotation direction : ");
 
   str = padNum(num.toString(2), 8, 0);
-  console.log(str);
+  console.log("Input  = ", str);
 
   res = rotateBit(str, rot, dir);
-  console.log(res);
+  console.log("Result = ", res);
   console.log(
     `Rotating ${num}, ${
       dir == "l" ? "left" : "right"

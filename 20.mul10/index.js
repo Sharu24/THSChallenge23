@@ -13,7 +13,7 @@ var getSum = (n1, n2) => (n2 ? getSum(n1 ^ n2, (n1 & n2) << 1) : n1);
 while (num !== "q") {
   var num = rls.question("Please enter a Number (type 'q' to quit) : ");
 
-  if (!isNaN(parseInt(num))) {
+  if (!isNaN(parseInt(num)) && parseInt(num) !== 0) {
     if (parseInt(num) % 10 === 0) {
       console.log(
         `Divisible by 10, ${num} * 10 = ${getSum(num << 1, num << 3)}`
