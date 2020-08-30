@@ -12,10 +12,6 @@ function crypt(str) {
     if (idx % 2) odd += str[idx];
     else even += str[idx];
   }
-  //   str.split("").forEach((ele, index) => {
-  //     if (index % 2) odd += ele;
-  //     else even += ele;
-  //   });
   even += "111";
   odd += "111";
   return [even, odd];
