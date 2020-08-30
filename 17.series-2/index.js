@@ -6,6 +6,13 @@ B.Write an algorithm to produce the above number series until ‘N’
 
 diff = 13, 26, 39, 52, 65, 91, 104
 */
+/* ------------------------------------------------------------
+
+Crack the series ​2 15 41 80 132 197 275 366 470 587 ......
+for i = 0, 1, 2, 3 , 4, 5 , ......
+when i = 0  then 2
+when i > 0  then ele(i-1) * 13*i 
+--------------------------------------------------------------*/
 
 var rls = require("../node_modules/readline-sync");
 var num;

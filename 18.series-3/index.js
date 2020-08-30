@@ -3,6 +3,7 @@ A.​Crack the series 1 2 3 6 9 18 27 54​ ......
 B.Write an algorithm to produce the above number series 
   until ‘N’ where N is apositive integer
 
+  for n >= 0, adds 3^n, 3^n
   1,1,3,3,9,9,27,27,....
 */
 
