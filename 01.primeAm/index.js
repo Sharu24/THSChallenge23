@@ -15,7 +15,7 @@ function checkPrime(num) {
   var flag = true,
     len = Math.floor(num ** 0.5);
   //
-  if (num === 1) flag = false;
+  if (num === 1 || num === 0) flag = false;
   else {
     for (var i = 2; i <= len; i++) {
       if (num % i === 0) {
