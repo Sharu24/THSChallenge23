@@ -38,18 +38,25 @@ do {
   console.log("Number of Swaps = ", result[1]);
 } while (rls.question("Wanna Try Again (y/n) ? : ") === "y" ? true : false);
 
+/* --------------------------------------------------------*/
+
 var iter = 1;
 var marr = [];
+console.log("");
+console.log("--------------------------------");
+console.log("----- Bubble Sort Stats --------");
+console.log("Size | Swaps | n*(n+1)/2 |  n^2");
+console.log("--------------------------------");
 while (iter <= 20) {
   marr.push(iter);
   console.log(
-    iter,
+    String(iter).padStart(4, " "),
     "|",
-    bubbleSort([...marr])[1],
+    String(bubbleSort([...marr])[1]).padStart(5, " "),
     "|",
-    iter * Math.floor((iter + 1) / 2),
+    String(iter * Math.floor((iter + 1) / 2)).padStart(9, " "),
     "|",
-    iter * iter
+    String(iter * iter).padStart(4, " ")
   );
   iter++;
 }
