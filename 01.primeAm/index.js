@@ -12,11 +12,20 @@ console.log("");
 
 /*-----------------------------------------------*/
 function checkPrime(num) {
-  for (var i = 2; i <= num ** 0.5; i++) {
-    if (num % i === 0) return false;
-    else return true;
+  var flag = true,
+    len = Math.floor(num ** 0.5);
+  //
+  if (num === 1) flag = false;
+  else {
+    for (var i = 2; i <= len; i++) {
+      if (num % i === 0) {
+        flag = false;
+        break;
+      }
+    }
+    if (i === len + 1) flag = true;
+    return flag;
   }
-  if (i === num || num === 1) return true;
 }
 /*-----------------------------------------------*/
 function checkNar(num) {
