@@ -1,6 +1,6 @@
-# SHIELD Registrations API -
+# Avengers Registrations API -
 
-## Implementing node JS with code Node JS Modules
+## Implementing node JS with Core Node JS Modules
 
 1. Creating a Web Server using http
 2. Build Secure Access ( SSL) using openSSL and https
