@@ -3,10 +3,12 @@
 ## Implementing node JS with code Node JS Modules
 
 1. Creating a Web Server using http
-2. Handling URL, Request and Response using URL, path, Event Emitters
-3. Build Router and Route Handles using callbacks
-4. Build Secure Access ( SSL) using openSSL and https
-5. Handle All Validations
+2. Build Secure Access ( SSL) using openSSL and https
+3. Handling Request Query Parameters, Request Objects
+4. Propogate Responses with Callbacks
+5. Build Router and Route Handlers using callbacks
+6. Validate User Attributes and Values
+7. Segregate Modules and define ownerships
 
 ## User Schema -
 
@@ -19,24 +21,26 @@
 | terms        | Boolean   | No     |
 | _id          | timestamp | No     |
 
-## Instructions
+## High Level API Routes
 
-1. Write an API to register a user in the above schema
+1. Register an Avenger
    > POST /users
-2. Write an API to consolidate User Data
+2. Consolidate and return an Array of Avengers with their details
    > GET /users - should give an Array of Objects (Exclude Passwords)
-3. Write an API to add multiple Hobbies to the user
-   > PUT /hobby?mobileNumber=3003003003 - Array of hobbies
-4. Write an API to access individual user data
-   > PUT /users?mobileNumber=3003003003
-5. Write an API to Delete a hobby (Just one Hobby)
-   > PUT /hobby?mobileNumber=3003003003&hobby=sleeping
-6. Write an API to calculate the age of user
-   > GET /age?mobileNumber=3003003003
+3. Add Hobbies to an Avenger
+   > PUT /hobby?mobileNumber='XXX' - Array of hobbies
+4. Get An Avenger Data
+   > GET /users?mobileNumber='XXX'
+5. Update an Avenger Data
+   > PUT /users?mobileNumber='XXX'
+6. Delete a hobby
+   > PUT /hobby?mobileNumber='XXX'&hobby=YYY
+7. Fetch an Avenger's Experience
+   > GET /age?mobileNumber='XXX'
 
 ---------------------------------------------------------------------------
 
-### Add an Avenger
+### Register an Avenger
 #### POST 
 ##### http://localhost:4000/users/
 ```
@@ -51,7 +55,7 @@
 ```
 ---------------------------------------------------------------------------
 
-### Add Hobbies
+### Add Hobbies to an Avenger
 #### PUT 
 ##### http://localhost:4000/users?mobileNumber=9876543210
 
@@ -61,7 +65,7 @@
 }
 ```
 ---------------------------------------------------------------------------
-### Get An Avenger
+### Get An Avenger Data
 #### GET
 ##### http://localhost:4000/users?mobileNumber=9876543210
 
