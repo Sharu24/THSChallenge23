@@ -22,6 +22,8 @@
 | _id          | timestamp | No     |
 
 
+(https://raw.githubusercontent.com/Sharu24/THSChallenge23/master/29.ShieldAPI/avenger.webp)
+
 ## High Level API Routes
 
 1. Register an Avenger
