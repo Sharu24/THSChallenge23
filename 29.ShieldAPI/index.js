@@ -86,7 +86,8 @@ const unifiedServer = (request, response) => {
     const router = {
       users: routes.users,
       age: routes.age,
-      hobby: routes.hobby
+      hobby: routes.hobby,
+      load: routes.load
     };
 
     const chosenHandler =

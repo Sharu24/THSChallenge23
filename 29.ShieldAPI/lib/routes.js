@@ -52,10 +52,58 @@ routes.hobby = (data, callback) => {
 // Invoke Route Handlers
 routes.age = (data, callback) => {
   if (acceptableMethods.indexOf(data.method) !== -1) {
-    routes._age[data.method](data, callback);
+    try {
+      routes._age[data.method](data, callback);
+    } catch (error) {
+      callback(statusCodes.INVALID_METHOD, {
+        Error: "Invalid Http/s method for specified route"
+      });
+    }
   } else {
     callback(statusCodes.INVALID_METHOD, {
       Error: "Invalid Http/s method, Request Failed"
+    });
+  }
+};
+
+routes.load = (data, callback) => {
+  if (acceptableMethods.indexOf[data.method] !== -1) {
+    try {
+      routes._load[data.method](data, callback);
+    } catch (error) {
+      console.log(error);
+      callback(statusCodes.INVALID_METHOD, {
+        Error: "Invalid Http/s method for the Specified Route"
+      });
+    }
+  } else {
+    callback(statusCodes.INVALID_METHOD, {
+      Error: "Invalid http/s method, Request Failed"
+    });
+  }
+};
+
+routes._load = {};
+
+routes._load.post = (data, callback) => {
+  //POST - To upload a bulk of Avengers into the team
+  //Request data - an Array of Objects
+  let response = {};
+  if (Array.isArray(data.payload)) {
+    let payloadSize = data.payload.length;
+    data.payload.forEach(user =>
+      routes._users.post(user, (status, payload) => {
+        response[user.mobileNumber] = payload;
+        if (Object.keys(response).length === payloadSize) {
+          callback(statusCodes.SUCCESS, {
+            Success: response
+          });
+        }
+      })
+    );
+  } else {
+    callback(statusCodes.BAD_REQUEST, {
+      Error: "Bulk load has to be an Array"
     });
   }
 };
@@ -223,12 +271,24 @@ routes._users.delete = (data, callback) => {
 //-----------------------------------------------------------------------------
 routes._users.post = (data, callback) => {
   //--- check if all the required fields are sent from the paylaod
-  const mobileNumber = validate.mobileNumber(data.payload.mobileNumber);
-  const firstName = validate.firstName(data.payload.firstName);
-  const lastName = validate.lastName(data.payload.lastName);
-  const emailAddress = validate.emailAddress(data.payload.emailAddress);
-  const userPassword = validate.userPassword(data.payload.userPassword);
-  const tcAgreement = validate.tcAgreement(data.payload.tcAgreement);
+  const mobileNumber = validate.mobileNumber(
+    data.payload ? data.payload.mobileNumber : data.mobileNumber
+  );
+  const firstName = validate.firstName(
+    data.payload ? data.payload.firstName : data.firstName
+  );
+  const lastName = validate.lastName(
+    data.payload ? data.payload.lastName : data.lastName
+  );
+  const emailAddress = validate.emailAddress(
+    data.payload ? data.payload.emailAddress : data.emailAddress
+  );
+  const userPassword = validate.userPassword(
+    data.payload ? data.payload.userPassword : data.userPassword
+  );
+  const tcAgreement = validate.tcAgreement(
+    data.payload ? data.payload.tcAgreement : data.tcAgreement
+  );
 
   if (
     firstName.valid &&

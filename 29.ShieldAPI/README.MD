@@ -37,6 +37,8 @@
    > PUT /hobby?mobileNumber='XXX'&hobby=YYY
 7. Fetch an Avenger's Experience
    > GET /age?mobileNumber='XXX'
+8. Bulk Load Avengers
+   > POST /load
 
 ---------------------------------------------------------------------------
 
@@ -57,7 +59,7 @@
 
 ### Add Hobbies to an Avenger
 #### PUT 
-##### http://localhost:4000/hobby?mobileNumber=9876543210
+##### /hobby?mobileNumber=9876543210
 
 ```
 {
@@ -67,13 +69,13 @@
 ---------------------------------------------------------------------------
 ### Get An Avenger Data
 #### GET
-##### http://localhost:4000/users?mobileNumber=9876543210
+##### /users?mobileNumber=9876543210
 
 
 ---------------------------------------------------------------------------
 ### Update An Avenger
 #### PUT
-##### http://localhost:4000/users?mobileNumber=9876543210
+##### /users?mobileNumber=9876543210
 
 ```
 {
@@ -84,60 +86,60 @@
 ---------------------------------------------------------------------------
 ### Delete Hobby of an Avenger
 #### PUT
-##### http://localhost:4000/hobby?mobileNumber=9876543210&hobbies=boxing
+##### /hobby?mobileNumber=9876543210&hobbies=boxing
 ---------------------------------------------------------------------------
 ### Get All Avengers
 #### GET
-##### http://localhost:4000/users
+##### /users
 ---------------------------------------------------------------------------
 ### Get Employment years for an Avenger
 #### GET
-##### http://localhost:4000/age?mobileNumber=9876543210
+##### /age?mobileNumber=9876543210
 ---------------------------------------------------------------------------
-### Reference Objects to play around
+### Bulk Load Avengers
+#### POST
+##### /load
 ```
-{
-"firstName" : "Tony",
-"lastName": "Stark",
-"mobileNumber": "3000300033",
-"emailAddress": "imim@avengers.com",
-"userPassword": "Iron@3000",
-"tcAgreement": true
-}
-
-{
-"firstName" : "Natasha",
-"lastName": "Romanoff",
-"mobileNumber": "4204204204",
-"emailAddress": "bwidow@avengers.com",
-"userPassword": "Black420@widow",
-"tcAgreement": true
-}
-
-{
-"firstName" : "Bruce",
-"lastName": "Banner",
-"mobileNumber": "1234567890",
-"emailAddress": "hulk@avengers.com",
-"userPassword": "Nooo00@eg",
-"tcAgreement": true
-}
-
-{
-"firstName" : "Thor",
-"lastName": "SonOfOdin",
-"mobileNumber": "9999999999",
-"emailAddress": "god@avengers.com",
-"userPassword": "Thunder123@",
-"tcAgreement": true
-}
-{
-"firstName" : "Clint",
-"lastName": "Barton",
-"mobileNumber": "7777222211",
-"emailAddress": "hawkeye@avengers.com",
-"userPassword": "archeR77@",
-"tcAgreement": true
-}
-
+[
+   {
+      "firstName" : "Tony",
+      "lastName": "Stark",
+      "mobileNumber": "3000300033",
+      "emailAddress": "imim@avengers.com",
+      "userPassword": "Iron@3000",
+      "tcAgreement": true
+   },
+   {
+      "firstName" : "Natasha",
+      "lastName": "Romanoff",
+      "mobileNumber": "4204204204",
+      "emailAddress": "bwidow@avengers.com",
+      "userPassword": "Black420@widow",
+      "tcAgreement": true
+   },
+   {
+      "firstName" : "Bruce",
+      "lastName": "Banner",
+      "mobileNumber": "1234567890",
+      "emailAddress": "hulk@avengers.com",
+      "userPassword": "Nooo00@eg",
+      "tcAgreement": true
+   },
+   {
+      "firstName" : "Thor",
+      "lastName": "SonOfOdin",
+      "mobileNumber": "9999999999",
+      "emailAddress": "god@avengers.com",
+      "userPassword": "Thunder123@",
+      "tcAgreement": true
+   },
+   {
+      "firstName" : "Clint",
+      "lastName": "Barton",
+      "mobileNumber": "7777222211",
+      "emailAddress": "hawkeye@avengers.com",
+      "userPassword": "archeR77@",
+      "tcAgreement": true
+   }
+]
 ```
