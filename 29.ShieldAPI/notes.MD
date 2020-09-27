@@ -1,23 +1,21 @@
-/\*
-Implementing node JS with code Node JS Modules
+# SHIELD Registrations API -
+
+## Implementing node JS with code Node JS Modules
 
 1. Creating a Web Server using http
 2. Handling URL, Request and Response using URL, path, Event Emitters
 3. Build Router and Route Handles using callbacks
 4. Build Secure Access ( SSL) using openSSL and https
-
-\*/
-
-# Assignments -
+5. Handle All Validations
 
 ## User Schema -
 
-firstName - String
-lastName - String
-mobileNumber - Number (Unique)
-email - String
-terms - Boolean
-\_id - new Date() (log the timestamp - in miliseconds)
+* firstName - String
+* lastName - String
+* mobileNumber - Number (Unique)
+* email - String
+* terms - Boolean
+* _id - new Date() (log the timestamp - in miliseconds)
 
 ## Instructions
 
@@ -34,17 +32,64 @@ terms - Boolean
 6. Write an API to calculate the age of user
    GET /age?mobileNumber=3003003003
 
+---------------------------------------------------------------------------
+
+### Add an Avenger
+#### POST 
+##### http://localhost:4000/users/
+```
 {
-"firstName" : "Steve",
-"lastName": "Rogers",
-"mobileNumber": "9876543210",
-"emailAddress": "captain@avengers.com",
-"userPassword": "Ca@avenger123",
-"tcAgreement": true
+   "firstName" : "Steve",
+   "lastName": "Rogers",
+   "mobileNumber": "9876543210",
+   "emailAddress": "captain@avengers.com",
+   "userPassword": "Ca@avenger123",
+   "tcAgreement": true
 }
+```
 
-"hobbies": ['running','boxing','dating']
 
+### Add Hobbies
+#### PUT 
+##### http://localhost:4000/users?mobileNumber=9876543210
+
+```
+{
+   "hobbies": ['running','boxing','dating']
+}
+```
+
+### Get An Avenger
+#### GET
+##### http://localhost:4000/users?mobileNumber=9876543210
+
+
+
+### Update An Avenger
+#### PUT
+##### http://localhost:4000/users?mobileNumber=9876543210
+
+```
+{
+   "mobileNumber": "9876543210",
+   "emailAddress":"Steve@avengers.com"
+}
+```
+
+### Delete Hobby of an Avenger
+#### PUT
+##### http://localhost:4000/users?mobileNumber=9876543210&hobbies=boxing
+
+### Get All Avengers
+#### GET
+##### http://localhost:4000/users
+
+### Get Employment years for an Avenger
+#### GET
+##### http://localhost:4000/age?mobileNumber=9876543210
+
+### Reference Objects to play around
+```
 {
 "firstName" : "Tony",
 "lastName": "Stark",
@@ -88,3 +133,5 @@ terms - Boolean
 "userPassword": "archeR77@",
 "tcAgreement": true
 }
+
+```
