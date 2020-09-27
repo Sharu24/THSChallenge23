@@ -57,7 +57,7 @@
 
 ### Add Hobbies to an Avenger
 #### PUT 
-##### http://localhost:4000/users?mobileNumber=9876543210
+##### http://localhost:4000/hobby?mobileNumber=9876543210
 
 ```
 {
@@ -84,7 +84,7 @@
 ---------------------------------------------------------------------------
 ### Delete Hobby of an Avenger
 #### PUT
-##### http://localhost:4000/users?mobileNumber=9876543210&hobbies=boxing
+##### http://localhost:4000/hobby?mobileNumber=9876543210&hobbies=boxing
 ---------------------------------------------------------------------------
 ### Get All Avengers
 #### GET
