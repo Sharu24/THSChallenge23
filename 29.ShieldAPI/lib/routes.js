@@ -15,7 +15,32 @@ const routes = {};
 routes.users = (data, callback) => {
   // callback returns a http code and a payload
   if (acceptableMethods.indexOf(data.method) !== -1) {
-    routes._users[data.method](data, callback);
+    try {
+      routes._users[data.method](data, callback);
+    } catch (error) {
+      callback(statusCodes.INVALID_METHOD, {
+        Error: "Invalid Http/s method for the Specified Route"
+      });
+    }
+  } else {
+    callback(statusCodes.INVALID_METHOD, {
+      Error: "Invalid Http/s method, Request Failed"
+    });
+  }
+};
+
+// Validate if the request Method is valid for /users
+// Invoke Route Handlers
+routes.hobby = (data, callback) => {
+  // callback returns a http code and a payload
+  if (acceptableMethods.indexOf(data.method) !== -1) {
+    try {
+      routes._hobby[data.method](data, callback);
+    } catch (error) {
+      callback(statusCodes.INVALID_METHOD, {
+        Error: "Invalid Http/s method for the Specified Route"
+      });
+    }
   } else {
     callback(statusCodes.INVALID_METHOD, {
       Error: "Invalid Http/s method, Request Failed"
@@ -93,123 +118,64 @@ routes._users.get = (data, callback) => {
 
 //-----------------------------------------------------------------------------
 // PUT Method for /users
-// Inner Routes :
-// 1. PUT - To Add or Append Hobbies
-// 2. PUT - To Delete a Hobby
-// 3. PUT - Update Optional Attributes
+//Routes :
+//    PUT - Update Optional Attributes
 //        - Required (query params) : Mobile Number, Atleast an Optional Field
 // Optional : First name, Last name, Password, Email Address
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
 routes._users.put = (data, callback) => {
   //---
-  //--- This PUT block is Utilized to Update Hobbies
-  if (data.queryObject.mobileNumber) {
-    const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+  //--- This PUT block is Utilized to Update request body Object
+  //---
+  const mobileNumber = validate.mobileNumber(data.payload.mobileNumber);
+  const firstName = validate.firstName(data.payload.firstName);
+  const lastName = validate.lastName(data.payload.lastName);
+  const emailAddress = validate.emailAddress(data.payload.emailAddress);
+  const userPassword = validate.userPassword(data.payload.userPassword);
+  if (mobileNumber.valid) {
+    if (
+      //--- Atleast Once of these needs to be valid to update
+      firstName.valid ||
+      lastName.valid ||
+      userPassword.valid ||
+      emailAddress.valid
+    ) {
+      _data.read("users", mobileNumber.value, (err, userData) => {
+        if (!err && userData) {
+          if (firstName.valid) userData.firstName = firstName.value;
+          if (lastName.valid) userData.lastName = lastName.value;
+          if (emailAddress.valid) userData.emailAddress = emailAddress.value;
+          if (userPassword.valid)
+            userData.hPassword = helpers.hash(userPassword.value);
 
-    if (mobileNumber.valid) {
-      //---
-      // PUT - To Add or Append Hobbies
-      // If Hobbies are bassed in the request body than the same will be evaluated.
-      // If Hobbies were already added, it will append additional values if any
-      // If hobbies were never added it will just add the Hobby Array
-      //---
-      if (data.payload.hobbies && !data.queryObject.hobbies) {
-        // Validate Hobbies
-        _data.append("users", mobileNumber.value, data.payload, error => {
-          if (!error) {
-            callback(statusCodes.SUCCESS, {
-              Success: "Data Appended Successfully"
-            });
-          } else {
-            callback(statusCodes.SERVER_ERROR, {
-              Error: error
-            });
-          }
-        });
-      }
-      //---
-      // PUT - To Delete a Hobby
-      // A Hobby for a registerd Avenger is passed in request query parameters
-      // Removes the Hobby value
-      //---
-      else if (data.queryObject.hobbies) {
-        _data.remove(
-          "users",
-          mobileNumber.value,
-          "hobbies",
-          data.queryObject.hobbies,
-          error => {
-            if (!error) {
+          //--- Once User data is successfully retrived and
+          //--- temporarily written with updates, update the data back
+          _data.update("users", mobileNumber.value, userData, err => {
+            if (!err) {
               callback(statusCodes.SUCCESS, {
-                Success: "Avenger Hobbies were Removed Successfully"
+                Success: "Avenger Details Successfully Updated"
               });
             } else {
-              callback(statusCodes.BAD_REQUEST, {
-                Error: error
+              console.error(err);
+              callback(statusCodes.SERVER_ERROR, {
+                Error: "Server Error: Update failed"
               });
             }
-          }
-        );
-      } else {
-        callback(statusCodes.BAD_REQUEST, {
-          Error: "Invalid request - Please check Swagger for API Documentation"
-        });
-      }
+          });
+        } else {
+          callback(statusCodes.BAD_REQUEST, {
+            Error: "Avenger Does not Exists"
+          });
+        }
+      });
+    } else {
+      callback(statusCodes.BAD_REQUEST, {
+        Error: "Missing fields to update"
+      });
     }
   } else {
-    //---
-    //--- This PUT block is Utilized to Update request body Object
-    //---
-    const mobileNumber = validate.mobileNumber(data.payload.mobileNumber);
-    const firstName = validate.firstName(data.payload.firstName);
-    const lastName = validate.lastName(data.payload.lastName);
-    const emailAddress = validate.emailAddress(data.payload.emailAddress);
-    const userPassword = validate.userPassword(data.payload.userPassword);
-    if (mobileNumber.valid) {
-      if (
-        //--- Atleast Once of these needs to be valid to update
-        firstName.valid ||
-        lastName.valid ||
-        userPassword.valid ||
-        emailAddress.valid
-      ) {
-        _data.read("users", mobileNumber.value, (err, userData) => {
-          if (!err && userData) {
-            if (firstName.valid) userData.firstName = firstName.value;
-            if (lastName.valid) userData.lastName = lastName.value;
-            if (emailAddress.valid) userData.emailAddress = emailAddress.value;
-            if (userPassword.valid)
-              userData.hPassword = helpers.hash(userPassword.value);
-
-            //--- Once User data is successfully retrived and
-            //--- temporarily written with updates, update the data back
-            _data.update("users", mobileNumber.value, userData, err => {
-              if (!err) {
-                callback(statusCodes.SUCCESS, {
-                  Success: "Avenger Details Successfully Updated"
-                });
-              } else {
-                console.error(err);
-                callback(statusCodes.SERVER_ERROR, {
-                  Error: "Server Error: Update failed"
-                });
-              }
-            });
-          } else {
-            callback(statusCodes.BAD_REQUEST, {
-              Error: "Avenger Does not Exists"
-            });
-          }
-        });
-      } else {
-        callback(statusCodes.BAD_REQUEST, {
-          Error: "Missing fields to update"
-        });
-      }
-    } else {
-      callback(statusCodes.BAD_REQUEST, { Error: mobileNumber.message });
-    }
+    callback(statusCodes.BAD_REQUEST, { Error: mobileNumber.message });
   }
 };
 
@@ -364,6 +330,84 @@ routes._age.get = (data, callback) => {
           Error: "Avenger Does not exist. Please register."
         });
       }
+    });
+  }
+};
+
+//-----------------------------------------------------------------------------
+routes._hobby = {};
+
+//-----------------------------------------------------------------------------
+// PUT Method for /hobby
+// Inner Routes :
+// 1. PUT - To Add or Append Hobbies
+// 2. PUT - To Delete a Hobby
+// Optional : none
+// Its a Private Route, Only logged in users can query user data
+//-----------------------------------------------------------------------------
+routes._hobby.put = (data, callback) => {
+  //---
+  //--- This PUT block is Utilized to Update Hobbies
+  if (data.queryObject.mobileNumber) {
+    const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+
+    if (mobileNumber.valid) {
+      //---
+      // PUT - To Add or Append Hobbies
+      // If Hobbies are bassed in the request body than the same will be evaluated.
+      // If Hobbies were already added, it will append additional values if any
+      // If hobbies were never added it will just add the Hobby Array
+      //---
+      if (data.payload.hobbies && !data.queryObject.hobbies) {
+        // Validate Hobbies
+        _data.append("users", mobileNumber.value, data.payload, error => {
+          if (!error) {
+            callback(statusCodes.SUCCESS, {
+              Success: "Data Appended Successfully"
+            });
+          } else {
+            callback(statusCodes.SERVER_ERROR, {
+              Error: error
+            });
+          }
+        });
+      }
+      //---
+      // PUT - To Delete a Hobby
+      // A Hobby for a registerd Avenger is passed in request query parameters
+      // Removes the Hobby value
+      //---
+      else if (data.queryObject.hobbies) {
+        _data.remove(
+          "users",
+          mobileNumber.value,
+          "hobbies",
+          data.queryObject.hobbies,
+          error => {
+            if (!error) {
+              callback(statusCodes.SUCCESS, {
+                Success: "Avenger Hobbies were Removed Successfully"
+              });
+            } else {
+              callback(statusCodes.BAD_REQUEST, {
+                Error: error
+              });
+            }
+          }
+        );
+      } else {
+        callback(statusCodes.BAD_REQUEST, {
+          Error: "Invalid request - Hobbies needs to be passed"
+        });
+      }
+    } else {
+      callback(statusCodes.BAD_REQUEST, {
+        Error: "Invalid request - Mobile Number is Invalid"
+      });
+    }
+  } else {
+    callback(statusCodes.BAD_REQUEST, {
+      Error: "Invalid request - Please Pass Mobile Number"
     });
   }
 };
