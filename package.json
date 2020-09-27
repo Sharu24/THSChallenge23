@@ -27,7 +27,13 @@
     "20": "node ./20.mul10/",
     "21": "node ./21.mul3half/",
     "22": "node ./22.rotateBits/",
-    "23": "node ./23.duplicate/"
+    "23": "node ./23.duplicate/",
+    "24": "cd ./24.formData/; python -m http.server 3020",
+    "25": "cd ./25.starRating/; python -m http.server 3021",
+    "26": "cd ./26.openWeather/; python -m http.server 3022",
+    "27": "cd ./26.Calendar/; python -m http.server 3023",
+    "28": "node ./28.RandomToken/",
+    "29": "node ./29.ShieldAPI/"
   },
   "author": "",
   "license": "ISC",

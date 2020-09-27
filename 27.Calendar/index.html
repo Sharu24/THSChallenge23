@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+      integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+      crossorigin="anonymous"
+    ></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="./styles.css" />
+    <title>Calendar</title>
+  </head>
+  <body>
+    <center>
+      <h3 class="monthYear"></h3>
+      <input type="submit" class="prev" value="<" />
+      <input type="submit" class="next" value=">" />
+      <div class="calendar"></div>
+      <br />
+    </center>
+  </body>
+  <script>
+    // Global Variables
+    var calEle = document.querySelector(".calendar");
+
+    /* Helper Functions */
+    var convStrObj = str => {
+      return str
+        .replace(/\n/g, ",")
+        .split(",")
+        .map(x => x.split(": ").map(y => y.trim()))
+        .reduce((a, x) => {
+          a[x[0]] = x[1];
+          return a;
+        }, {});
+    };
+    var isLeapYear = lYear => {
+      return !(lYear % 4) && lYear % 100 ? true : false;
+    };
+
+    /***********************************************************
+     * @Desc: Constructor Function - Calendar
+     ************************************************************/
+    function Calendar() {
+      this.rows = 7;
+      this.columns = 7;
+      this.dCal = {};
+      this.days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
+      this.mNames = [
+        { 31: "January" },
+        { 28: "February" },
+        { 31: "March" },
+        { 30: "April" },
+        { 31: "May" },
+        { 30: "June" },
+        { 31: "July" },
+        { 31: "August" },
+        { 30: "September" },
+        { 31: "October" },
+        { 30: "November" },
+        { 31: "December" }
+      ];
+      this.init();
+    }
+
+    /***********************************************************
+     * @Desc: get Date() Calendar
+     ************************************************************/
+    Calendar.prototype.getDate = async function() {
+      var iPUrl = "http://ip-api.com/json/";
+      var ip = await axios.get(iPUrl);
+
+      var baseUrl = `http://worldtimeapi.org/api/ip/${ip.data.query}.txt`;
+      var dateTime = await axios.get(baseUrl);
+
+      var dObj = convStrObj(dateTime.data);
+
+      var lDate = new Date(dObj.unixtime * 1000);
+
+      var lDay = lDate.getDate();
+      var lMonth = lDate.getMonth();
+      var lYear = lDate.getFullYear();
+
+      var lMonthDays = Object.keys(this.mNames[lMonth]).join("") | 0;
+
+      var lFirstDay = (9 - (lDay % 7) + lDate.getDay()) % 7;
+
+      return { lDay, lMonth, lYear, lFirstDay, lMonthDays };
+    };
+
+    /***********************************************************
+     * @Desc: Handle Navigation Method
+     ************************************************************/
+    Calendar.prototype.handleNav = async function(nav) {
+      // Get the current calendar snapshot from constructor function
+      var { lDay, lMonth, lYear, lFirstDay, lMonthDays } = this.dCal;
+      var isLeap = false;
+
+      // -----------------------------------------------
+      // If the User wants to traverse to previous month
+      if (nav === "<") {
+        // If we want to go back from Jan which has month index = 0,
+        // reset the month index = 11 to reflect december and go back a year
+        if (--lMonth < 0) {
+          lMonth = 11;
+          lYear--;
+        }
+
+        // Get Number of Days in the Previous Month
+        if (lMonth === 1) isLeap = isLeapYear(lYear);
+        if (isLeap) lMonthDays = 29;
+        else lMonthDays = Object.keys(this.mNames[lMonth]).join("") | 0;
+
+        //Get the first Day of the Month to be displayed
+        lFirstDay = 7 - ((7 - lFirstDay + lMonthDays) % 7);
+      }
+      // -----------------------------------------------
+      // If the User wants to traverse to next month
+      else {
+        //Get the first Day of the Month to be displayed
+        lFirstDay =
+          (lMonthDays + lFirstDay) % 7 == 0 ? 7 : (lMonthDays + lFirstDay) % 7;
+
+        if (++lMonth > 11) {
+          lMonth = 0;
+          lYear++;
+        }
+
+        // Get Number of Days in the Previous Month
+        if (lMonth === 1) isLeap = isLeapYear(lYear);
+        if (isLeap) lMonthDays = 29;
+        else lMonthDays = Object.keys(this.mNames[lMonth]).join("") | 0;
+      }
+      // -----------------------------------------------
+
+      // Update the new Calendar date onto constructor function
+      this.dCal = { lDay, lMonth, lYear, lFirstDay, lMonthDays };
+      await this.displayCal();
+    };
+
+    /***********************************************************
+     * @Desc: Initializing Calendar
+     ************************************************************/
+    Calendar.prototype.init = async function() {
+      this.dCal = await this.getDate();
+      await this.displayCal();
+    };
+
+    /***********************************************************
+     * @Desc: Display Calendar
+     ************************************************************/
+    Calendar.prototype.displayCal = function() {
+      var tbl, tr, td;
+
+      tbl = document.createElement("table");
+      div = document.createDocumentFragment("div");
+      var dCount = 0,
+        bFlag = false;
+
+      document.querySelector(".monthYear").innerHTML =
+        Object.values(this.mNames[this.dCal.lMonth]) + " " + this.dCal.lYear;
+
+      var rows =
+        Math.floor(this.dCal.lMonthDays / 7) +
+        (this.dCal.lMonthDays % 7 === 0 ? 0 : 1) +
+        this.dCal.lFirstDay +
+        1;
+      var cols = 7;
+      var calSize = rows * cols;
+
+      for (var i = 1; i <= calSize; i++) {
+        // For Every new row create a 'tr' element
+        if (i % cols === 1) {
+          if (bFlag) break;
+          tr = document.createElement("tr");
+        }
+
+        // create a header 'th' row to store days [mon,tue...]
+        if (i <= cols) {
+          th = document.createElement("th");
+          th.innerHTML = this.days[i - 1];
+          tr.appendChild(th);
+        } else {
+          td = document.createElement("td");
+          // start filling from the first of that month until No of days
+          if (i - 7 >= this.dCal.lFirstDay && dCount < this.dCal.lMonthDays) {
+            td.innerHTML = ++dCount;
+            if (dCount === this.dCal.lDay) {
+              td.classList.add("currDate");
+            }
+          }
+          if (dCount === this.dCal.lMonthDays) bFlag = true;
+          tr.appendChild(td);
+        }
+        div.appendChild(tr);
+      }
+      tbl.appendChild(div);
+      calEle.appendChild(tbl);
+    };
+
+    /***********************************************************
+     * @Desc: Initializing Calendar
+     ************************************************************/
+    var prevBtn = document.querySelector(".prev");
+    var nextBtn = document.querySelector(".next");
+
+    var cal = new Calendar();
+
+    prevBtn.addEventListener("click", () => {
+      calEle.innerHTML = "";
+      cal.handleNav("<");
+    });
+    nextBtn.addEventListener("click", () => {
+      calEle.innerHTML = "";
+      cal.handleNav(">");
+    });
+
+    document.addEventListener("keydown", event => {
+      calEle.innerHTML = "";
+      if (event.keyCode === 37) cal.handleNav("<");
+      else if (event.keyCode === 39) cal.handleNav(">");
+      else cal = new Calendar();
+    });
+  </script>
+</html>

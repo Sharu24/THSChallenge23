@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.20.0/axios.min.js"
+      integrity="sha512-quHCp3WbBNkwLfYUMd+KwBAgpVukJu5MncuQaWXgCrfgcxCJAq/fo+oqrRKOj+UKEmyMCG3tb8RB63W+EmrOBg=="
+      crossorigin="anonymous"
+    ></script>
+    <link rel="stylesheet" href="./styles.css" />
+    <!-- <script src="./app.js"></script> -->
+    <title>My Form</title>
+  </head>
+  <body>
+    <center>
+      <h1>Half Stack Development</h1>
+      <h5>Writes user data into a file</h5>
+      <h2>User Data</h2>
+      <div class="form-Container">
+        <form action="http://127.0.0.1:3000/" method="get">
+          <input
+            type="text"
+            name="firstName"
+            placeholder="Enter First Name"
+            autocomplete="off"
+            required
+          />
+          <br />
+          <input
+            type="email"
+            name="emailAddr"
+            placeholder="Enter your Email"
+            autocomplete="off"
+            required
+          />
+          <br />
+          <input
+            type="password"
+            name="userPassword"
+            placeholder="Enter your Password"
+            autocomplete="off"
+            required
+          />
+          <br />
+          <br />
+          <input type="submit" name="submitData" />
+        </form>
+        <div id="output" name="output"></div>
+      </div>
+    </center>
+  </body>
+</html>

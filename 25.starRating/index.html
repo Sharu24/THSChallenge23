@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      rel="stylesheet"
+      href="https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css"
+    />
+    <title>Document</title>
+    <style>
+      .fa-star-o:before {
+        content: "\f006";
+        color: #5f6368;
+      }
+
+      .fa-star:before {
+        content: "\f005";
+        color: #d56e0c;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="star"></div>
+    <div id="display-star"></div>
+    <!-- 
+    <i class="fa fa-star"></i>
+    <i class="fa fa-star-o"></i> -->
+
+    <!-- <script src="script.js"></script> -->
+    <script>
+      function getStar(value) {
+        document.getElementById("display-star").innerHTML = value;
+      }
+      /*
+       * Creates star rating functionality
+       * @param el DOM Element
+       * @param count Number of stars
+       * @param callback Returns selected star count to callback
+       */
+      function Star(el, count, callback) {
+        // write logic to create star rating utility.
+        this.el = document.querySelector(el);
+        this.count = count;
+        this.callback = callback;
+        this.active = -1;
+        this.init();
+        this.bindEvents();
+      }
+
+      Star.prototype.init = function() {
+        var div = document.createDocumentFragment("div");
+        for (var i = 1; i <= this.count; i++) {
+          var iElem = document.createElement("i");
+          iElem.classList.add("fa");
+          iElem.classList.add("fa-star-o");
+          iElem.dataset["ratingVal"] = i;
+          div.appendChild(iElem);
+        }
+        this.el.appendChild(div);
+      };
+
+      Star.prototype.fill = function(activeVal) {
+        for (var i = 1; i <= this.count; i++) {
+          var iEle = document.querySelector("i[data-rating-val='" + i + "']");
+          if (i <= activeVal) {
+            iEle.classList.add("fa-star");
+          } else {
+            iEle.classList.remove("fa-star");
+          }
+        }
+      };
+
+      Star.prototype.bindEvents = function() {
+        this.el.addEventListener("mouseover", e => {
+          this.fill(e.target.dataset["ratingVal"]);
+        });
+        this.el.addEventListener("mouseout", e => {
+          this.fill(this.active);
+        });
+        this.el.addEventListener("click", e => {
+          this.active = e.target.dataset["ratingVal"];
+          this.callback(this.active);
+        });
+      };
+
+      new Star("#star", 9, getStar);
+    </script>
+  </body>
+</html>

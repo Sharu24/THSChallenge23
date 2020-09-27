@@ -1,0 +1,63 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: "Montserrat", sans-serif;
+  background: #838383;
+}
+
+h3 {
+  margin-top: 1rem;
+  font-size: 1.6rem;
+  color: #fccbcb;
+}
+
+.calendar {
+  /* height: 30vh; */
+  max-height: 320px;
+}
+table {
+  border: 10px solid #ad9d9d;
+  border-style: double;
+  box-shadow: 2px 2px 2px #887c7c, -2px 2px 2px #887c7c, 2px -2px 2px #887c7c,
+    -2px -2px 2px #887c7c;
+  background: #838383;
+  color: #fccbcb;
+}
+th,
+td,
+tr {
+  border: 1px solid rgb(104, 85, 85);
+  padding: 0.5rem;
+  font-weight: bold;
+  text-align: center;
+  background: rgb(71, 90, 104);
+}
+
+th {
+  width: 2rem;
+  text-transform: capitalize;
+  text-emphasis: emphasis;
+  color: #838383;
+  background-color: #d9adad;
+}
+
+td {
+  color: #fccbcb;
+  background-color: #838383;
+}
+
+.currDate {
+  background: #838383;
+}
+
+input[type="submit"] {
+  font-size: 2rem;
+  font-stretch: ultra-expanded;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: #fccbcb;
+}

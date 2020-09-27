@@ -1,0 +1,10 @@
+{
+  "firstName": "Thor",
+  "lastName": "SonOfOdin",
+  "mobileNumber": "9999999999",
+  "emailAddress": "god@avengers.com",
+  "hashPassword": "f53ed5e982642b1bfdb6d4b277b1ef43898cbf3db9799e6300485058d50689b9",
+  "tcAgreement": true,
+  "_id": 1101140149431,
+  "hobbies": ["drinking", "faking", "video games", "thundering", "Boltering"]
+}

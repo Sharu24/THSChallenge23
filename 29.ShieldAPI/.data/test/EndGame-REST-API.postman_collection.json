@@ -1,0 +1,861 @@
+{
+	"info": {
+		"_postman_id": "a720f532-2d1e-4681-b15d-95e09a2bc7a9",
+		"name": "EndGame-REST-API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Add an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"firstName\" : \"Clint\",\n\"lastName\": \"Barton\",\n\"mobileNumber\": \"7777222211\",\n\"emailAddress\": \"hawkeye@avengers.com\",\n\"userPassword\": \"archeR77@\",\n\"tcAgreement\": true\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "Add an Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Get All Avengers",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\" : \"Natasha\",\n    \"lastName\": \"Romanoff\",\n    \"mobileNumber\": \"8408408408\",\n    \"emailAddress\": \"bw@avengers.com\",\n    \"userPassword\": \"BW1@nidevelar\",\n    \"tcAgreement\": true\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "Gets Avengers in a array"
+			},
+			"response": []
+		},
+		{
+			"name": "Deletes an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\" : \"Steve   \",\n    \"lastName\": \"Rogers\",\n    \"mobileNumber\": \"8911220018\",\n    \"userPassword\": \"Sharu@124\",\n    \"tcAgreement\": true\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/users?mobileNumber=8911220018",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "mobileNumber",
+							"value": "8911220018"
+						}
+					]
+				},
+				"description": "Deletes an Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Updates an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstName\" : \"Steve   \",\n    \"lastName\": \"Rogers\",\n    \"mobileNumber\": \"8911220018\",\n    \"userPassword\": \"Sharu@124\",\n    \"tcAgreement\": true\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					]
+				},
+				"description": "Updates an Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Get An Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/users?mobileNumber=8911220018",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "mobileNumber",
+							"value": "8911220018"
+						}
+					]
+				},
+				"description": "Get An Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Add Hobbies to an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hobbies\": [\"sleeping\",\"eating\",\"drinking\"],\n    \"hobb\": [\"sleeping\",\"eating\",\"drinking\"]\n}"
+				},
+				"url": {
+					"raw": "http://localhost:4000/users?mobileNumber=9876543210",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "mobileNumber",
+							"value": "9876543210"
+						}
+					]
+				},
+				"description": "Add Hobbies to an Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete a Hobby of an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/users?mobileNumber=9876543210&hobbies=sleeping",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"users"
+					],
+					"query": [
+						{
+							"key": "mobileNumber",
+							"value": "9876543210"
+						},
+						{
+							"key": "hobbies",
+							"value": "sleeping"
+						}
+					]
+				},
+				"description": "Delete a Hobby of an Avenger"
+			},
+			"response": []
+		},
+		{
+			"name": "Age of an Avenger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b455372e-a2b5-43ef-8953-c481586c2a65",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"var users = '';",
+							"for (var i = 0; i < jsonData.length; i++){",
+							"    users = users + ' - @' + jsonData[i].user.screen_name + ' - ' + jsonData[i].created_at + ', ' + jsonData[i].text + '<br>';",
+							"    }",
+							"//users = users + '';",
+							"pm.visualizer.set(users);    ",
+							"pm.environment.set(\"accounts\",users);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "oauth1",
+					"oauth1": [
+						{
+							"key": "tokenSecret",
+							"value": "{{twitter_token_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "token",
+							"value": "{{twitter_access_token}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerSecret",
+							"value": "{{twitter_consumer_secret}}",
+							"type": "string"
+						},
+						{
+							"key": "consumerKey",
+							"value": "{{twitter_consumer_key}}",
+							"type": "string"
+						},
+						{
+							"key": "addParamsToHeader",
+							"value": true,
+							"type": "boolean"
+						},
+						{
+							"key": "signatureMethod",
+							"value": "HMAC-SHA1",
+							"type": "string"
+						},
+						{
+							"key": "version",
+							"value": "1.0",
+							"type": "string"
+						},
+						{
+							"key": "addEmptyParamsToSign",
+							"value": false,
+							"type": "boolean"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/html",
+						"type": "text"
+					},
+					{
+						"key": "token",
+						"value": "SHA-dASasdadandJJNDKJN12AN.Jffe",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "http://localhost:4000/age?mobileNumber=8911220018",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "4000",
+					"path": [
+						"age"
+					],
+					"query": [
+						{
+							"key": "mobileNumber",
+							"value": "8911220018"
+						}
+					]
+				},
+				"description": "Age of an Avenger"
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
