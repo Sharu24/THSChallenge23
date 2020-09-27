@@ -21,17 +21,17 @@ _id|timestamp|No
 ## Instructions
 
 1. Write an API to register a user in the above schema
-   POST /users
+   > POST /users
 2. Write an API to consolidate User Data
-   GET /users - should give an Array of Objects (Exclude Passwords)
+   > GET /users - should give an Array of Objects (Exclude Passwords)
 3. Write an API to add multiple Hobbies to the user
-   PUT /hobby?mobileNumber=3003003003 - Array of hobbies
+   > PUT /hobby?mobileNumber=3003003003 - Array of hobbies
 4. Write an API to access individual user data
-   PUT /users?mobileNumber=3003003003
+   > PUT /users?mobileNumber=3003003003
 5. Write an API to Delete a hobby (Just one Hobby)
-   PUT /hobby?mobileNumber=3003003003&hobby=sleeping
+   > PUT /hobby?mobileNumber=3003003003&hobby=sleeping
 6. Write an API to calculate the age of user
-   GET /age?mobileNumber=3003003003
+   > GET /age?mobileNumber=3003003003
 
 ---------------------------------------------------------------------------
 
