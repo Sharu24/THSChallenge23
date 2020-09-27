@@ -9,6 +9,7 @@
 5. Handle All Validations
 
 ## User Schema -
+
 | Field Name   | Data Type | Unique |
 | ------------ | --------- | ------ |
 | firstName    | String    | No     |
