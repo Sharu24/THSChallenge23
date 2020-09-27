@@ -33,7 +33,7 @@
     "26": "cd ./26.openWeather/; python -m http.server 3022",
     "27": "cd ./26.Calendar/; python -m http.server 3023",
     "28": "node ./28.RandomToken/",
-    "29": "node ./29.ShieldAPI/"
+    "29": "cd ./29.ShieldAPI/; node ."
   },
   "author": "",
   "license": "ISC",
