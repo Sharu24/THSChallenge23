@@ -14,8 +14,8 @@ Field Name | Data Type | Unique
 firstName|String|No
 lastName|String|No
 mobileNumber|Number|Yes
-email|String|Yes
-terms|Boolean|Yes
+email|String|No
+terms|Boolean|No
 _id|timestamp|No
 
 ## Instructions
