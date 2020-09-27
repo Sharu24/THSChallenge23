@@ -23,7 +23,7 @@
 
 
 ![Image of Avengers]
-(https://raw.githubusercontent.com/Sharu24/THSChallenge23/master/29.ShieldAPI/avenger1.jpeg)
+(https://github.com/Sharu24/THSChallenge23/blob/master/29.ShieldAPI/Avengers.png)
 
 ## High Level API Routes
 
