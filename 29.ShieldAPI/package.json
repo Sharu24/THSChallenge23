@@ -1,0 +1,19 @@
+{
+  "name": "29.ShieldAPI",
+  "version": "1.0.0",
+  "description": "## Implementing node JS with Core Node JS Modules",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

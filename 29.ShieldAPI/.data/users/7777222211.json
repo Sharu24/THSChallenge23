@@ -1,1 +1,9 @@
-{"firstName":"Clint","lastName":"Barton","mobileNumber":"7777222211","emailAddress":"hawkeye@avengers.com","hashPassword":"2128c78fdcffb816d36272182f173a5f62129141239f77c171f2cf7dcd884dc8","tcAgreement":true,"_id":1601257287671}
+{
+  "firstName": "Clint",
+  "lastName": "Barton",
+  "mobileNumber": "7777222211",
+  "emailAddress": "hawkeye@avengers.net",
+  "hashPassword": "2128c78fdcffb816d36272182f173a5f62129141239f77c171f2cf7dcd884dc8",
+  "tcAgreement": true,
+  "_id": 1601257287671
+}

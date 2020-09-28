@@ -124,10 +124,11 @@ routes._users.get = (data, callback) => {
   //---
   // GET - To get an Avenger,
   // Request Query Param - Mobile Number, Request Body - NA
-  if (data.queryObject.mobileNumber) {
-    const queryObject = validate.mobileNumber(data.queryObject.mobileNumber);
-    if (queryObject.value) {
-      _data.read("users", queryObject.value, (err, data) => {
+  let { mobileNumber } = data.queryObject.mobileNumber;
+  if (mobileNumber) {
+    mobileNumber = validate.mobileNumber(mobileNumber);
+    if (mobileNumber.value) {
+      _data.read("users", mobileNumber.value, (err, data) => {
         if (!err && data) {
           delete data.hashPassword;
           callback(statusCodes.SUCCESS, data);
@@ -180,11 +181,20 @@ routes._users.put = (data, callback) => {
   //---
   //--- This PUT block is Utilized to Update request body Object
   //---
-  const mobileNumber = validate.mobileNumber(data.payload.mobileNumber);
-  const firstName = validate.firstName(data.payload.firstName);
-  const lastName = validate.lastName(data.payload.lastName);
-  const emailAddress = validate.emailAddress(data.payload.emailAddress);
-  const userPassword = validate.userPassword(data.payload.userPassword);
+  let {
+    firstName,
+    lastName,
+    mobileNumber,
+    emailAddress,
+    userPassword
+  } = data.payload;
+
+  mobileNumber = validate.mobileNumber(mobileNumber);
+  firstName = validate.firstName(firstName);
+  lastName = validate.lastName(lastName);
+  emailAddress = validate.emailAddress(emailAddress);
+  userPassword = validate.userPassword(userPassword);
+
   if (mobileNumber.valid) {
     if (
       //--- Atleast Once of these needs to be valid to update
@@ -238,6 +248,7 @@ routes._users.put = (data, callback) => {
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
 routes._users.delete = (data, callback) => {
+  // let {mobileNumber} = data.queryObject.mobileNumber;
   const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
 
   if (mobileNumber.valid) {

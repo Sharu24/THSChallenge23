@@ -5,12 +5,13 @@ const util = require("util");
 
 const lib = {};
 
+const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
+const unlink = util.promisify(fs.unlink);
 
 //-----------------------------------------------------------------------------
 // Function to check if a File Exists
 //-----------------------------------------------------------------------------
-
 lib.exists = (dir, fileName, callback) => {
   fs.access(getFilePath(dir, fileName), fs.constants.F_OK, err => {
     if (!err) callback(false);
@@ -30,39 +31,16 @@ lib.create = async (dir, fileName, fileData, callback) => {
   }
 };
 
-// lib.create = (dir, fileName, fileData, callback) => {
-//   fs.open(getFilePath(dir, fileName), "wx", (err, fileDescriptor) => {
-//     if (!err && fileDescriptor) {
-//       const stringData = JSON.stringify(fileData);
-//       fs.writeFile(fileDescriptor, stringData, err => {
-//         if (!err) {
-//           fs.close(fileDescriptor, err => {
-//             /* Everything passes */
-//             if (!err) callback(false);
-//             else callback("Error Closing the File");
-//           });
-//         } else {
-//           callback("Error is writing into the file - ", err);
-//         }
-//       });
-//     } else {
-//       callback("Could not create the file or there may be one already");
-//     }
-//   });
-// };
-
 //------------------------------------------------------
 // Function to read a file
 //------------------------------------------------------
-lib.read = (dir, fileName, callback) => {
-  fs.readFile(getFilePath(dir, fileName), "utf-8", (error, fileData) => {
-    if (!error && fileData) {
-      const parsedData = helpers.parse(fileData);
-      callback(false, parsedData);
-    } else {
-      callback(error, fileData);
-    }
-  });
+lib.read = async (dir, fileName, callback) => {
+  try {
+    const fileData = await readFile(getFilePath(dir, fileName), "utf-8");
+    callback(false, helpers.parse(fileData));
+  } catch (error) {
+    callback(error, null);
+  }
 };
 
 //------------------------------------------------------
@@ -93,30 +71,13 @@ lib.readFileAsync = (dir, file) => {
 //------------------------------------------------------
 // Function to update the file
 //------------------------------------------------------
-lib.update = (dir, fileName, fileData, callback) => {
-  fs.open(getFilePath(dir, fileName), "r+", (err, fileDescriptor) => {
-    if (!err && fileDescriptor) {
-      const stringData = JSON.stringify(fileData);
-      fs.ftruncate(fileDescriptor, error => {
-        if (!error) {
-          fs.writeFile(fileDescriptor, stringData, error => {
-            if (!error) {
-              fs.close(fileDescriptor, error => {
-                if (!err) callback(false);
-                else callback("Error while closing the file");
-              });
-            } else {
-              callback("Error in Writing data into the file");
-            }
-          });
-        } else {
-          callback("Error in truncating file content");
-        }
-      });
-    } else {
-      callback("Could not create the file or there may be one already");
-    }
-  });
+lib.update = async (dir, fileName, fileData, callback) => {
+  try {
+    await writeFile(getFilePath(dir, fileName), JSON.stringify(fileData));
+    callback(false);
+  } catch (error) {
+    callback("Error in Updating the file - ", error);
+  }
 };
 
 //------------------------------------------------------
@@ -161,42 +122,42 @@ lib.append = (dir, fileName, appendData, callback) => {
 //------------------------------------------------------
 // Function to remove value of Array attribute
 //------------------------------------------------------
-lib.remove = (dir, fileName, attr, value, callback) => {
-  fs.readFile(getFilePath(dir, fileName), "utf-8", (error, fileData) => {
-    if (!error && fileData) {
-      let parsedData = helpers.parse(fileData);
-      if (parsedData[attr]) {
-        let attrArray = parsedData[attr];
-        if (attrArray.indexOf(value) !== -1) {
-          attrArray.splice(attrArray.indexOf(value), 1);
-          parsedData[attr] = attrArray;
-          const stringData = JSON.stringify(parsedData);
-          fs.writeFile(getFilePath(dir, fileName), stringData, err => {
-            if (!err) {
-              callback(false);
-            } else {
-              callback("Cannot update data attributes");
-            }
-          });
-        } else {
-          callback(`Value ${value} does not exists for ${attr}`);
+lib.remove = async (dir, fileName, attr, value, callback) => {
+  try {
+    const fileData = await readFile(getFilePath(dir, fileName), "utf-8");
+    let parsedData = helpers.parse(fileData);
+    if (parsedData[attr]) {
+      let attrArray = parsedData[attr];
+      if (attrArray.indexOf(value) !== -1) {
+        attrArray.splice(attrArray.indexOf(value), 1);
+        parsedData[attr] = attrArray;
+        const stringData = JSON.stringify(parsedData);
+        try {
+          await writeFile(getFilePath(dir, fileName), stringData);
+          callback(false);
+        } catch (error) {
+          callback("Cannot update data attributes");
         }
       } else {
-        callback(`Attrubute ${attr} does not exists `);
+        callback(`Value ${value} does not exists for ${attr}`);
       }
     } else {
-      callback("Cannot Read the File");
+      callback(`Attrubute ${attr} does not exists `);
     }
-  });
+  } catch (error) {
+    callback("Cannot Read the File");
+  }
 };
 //------------------------------------------------------
 // Function to delete a file
 //------------------------------------------------------
-lib.delete = (dir, fileName, callback) => {
-  fs.unlink(getFilePath(dir, fileName), error => {
-    if (!error) callback(false);
-    else callback("Error in Deleting the data");
-  });
+lib.delete = async (dir, fileName, callback) => {
+  try {
+    await fs.unlink(getFilePath(dir, fileName));
+    callback(false);
+  } catch (error) {
+    callback("Error in Deleting the data");
+  }
 };
 
 module.exports = lib;

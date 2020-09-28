@@ -16,16 +16,19 @@ const helpers = require("./lib/helpers");
 const routes = require("./lib/routes");
 const stringDecoder = require("string_decoder").StringDecoder;
 
+const port = process.env.PORT || 4000;
+
 //-----------------------------------------------------------------
 //Create A HTTP Server and handle requests and responses
 const httpServer = http.createServer((request, response) => {
   unifiedServer(request, response);
 });
 //Listening on a Server
-httpServer.listen(getEnv.httpPort, () => {
-  console.log(
-    `httpServer Listening on port ${getEnv.httpPort} in ${getEnv.envName}`
-  );
+httpServer.listen(port, () => {
+  // console.log(
+  //   `httpServer Listening on port ${getEnv.httpPort} in ${getEnv.envName}`
+  // );
+  console.log(`httpServer Listening on port ${port} in ${getEnv.envName}`);
 });
 
 //Create A HTTPS Server and handle requests and responses
@@ -40,11 +43,11 @@ const httpsServer = https.createServer(
   }
 );
 //Listening on a Server
-httpsServer.listen(getEnv.httpsPort, () => {
-  console.log(
-    `httpsServer Listening on port ${getEnv.httpsPort} in ${getEnv.envName}`
-  );
-});
+// httpsServer.listen(getEnv.httpsPort, () => {
+//   console.log(
+//     `httpsServer Listening on port ${getEnv.httpsPort} in ${getEnv.envName}`
+//   );
+// });
 
 //-----------------------------------------------------------------
 // Handle both http and https
