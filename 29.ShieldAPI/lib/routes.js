@@ -13,10 +13,11 @@ const routes = {};
 // Validate if the request Method is valid for /users
 // Invoke Route Handlers
 routes.users = (data, callback) => {
+  const { method } = data; // const method = data.method
   // callback returns a http code and a payload
-  if (acceptableMethods.indexOf(data.method) !== -1) {
+  if (acceptableMethods.indexOf(method) !== -1) {
     try {
-      routes._users[data.method](data, callback);
+      routes._users[method](data, callback);
     } catch (error) {
       callback(statusCodes.INVALID_METHOD, {
         Error: "Invalid Http/s method for the Specified Route"
@@ -32,10 +33,11 @@ routes.users = (data, callback) => {
 // Validate if the request Method is valid for /users
 // Invoke Route Handlers
 routes.hobby = (data, callback) => {
+  const { method } = data;
   // callback returns a http code and a payload
-  if (acceptableMethods.indexOf(data.method) !== -1) {
+  if (acceptableMethods.indexOf(method) !== -1) {
     try {
-      routes._hobby[data.method](data, callback);
+      routes._hobby[method](data, callback);
     } catch (error) {
       callback(statusCodes.INVALID_METHOD, {
         Error: "Invalid Http/s method for the Specified Route"
@@ -51,9 +53,10 @@ routes.hobby = (data, callback) => {
 // Validate if the request Method is valid for /age
 // Invoke Route Handlers
 routes.age = (data, callback) => {
-  if (acceptableMethods.indexOf(data.method) !== -1) {
+  const { method } = data;
+  if (acceptableMethods.indexOf(method) !== -1) {
     try {
-      routes._age[data.method](data, callback);
+      routes._age[method](data, callback);
     } catch (error) {
       callback(statusCodes.INVALID_METHOD, {
         Error: "Invalid Http/s method for specified route"
@@ -67,9 +70,10 @@ routes.age = (data, callback) => {
 };
 
 routes.load = (data, callback) => {
-  if (acceptableMethods.indexOf[data.method] !== -1) {
+  const { method } = data;
+  if (acceptableMethods.indexOf[method] !== -1) {
     try {
-      routes._load[data.method](data, callback);
+      routes._load[method](data, callback);
     } catch (error) {
       console.log(error);
       callback(statusCodes.INVALID_METHOD, {
@@ -270,24 +274,29 @@ routes._users.delete = (data, callback) => {
 //Optional data = none
 //-----------------------------------------------------------------------------
 routes._users.post = (data, callback) => {
+  let {
+    firstName,
+    lastName,
+    mobileNumber,
+    emailAddress,
+    userPassword,
+    tcAgreement
+  } = data.payload;
+
   //--- check if all the required fields are sent from the paylaod
-  const mobileNumber = validate.mobileNumber(
-    data.payload ? data.payload.mobileNumber : data.mobileNumber
+  mobileNumber = validate.mobileNumber(
+    data.payload ? mobileNumber : data.mobileNumber
   );
-  const firstName = validate.firstName(
-    data.payload ? data.payload.firstName : data.firstName
+  firstName = validate.firstName(data.payload ? firstName : data.firstName);
+  lastName = validate.lastName(data.payload ? lastName : data.lastName);
+  emailAddress = validate.emailAddress(
+    data.payload ? emailAddress : data.emailAddress
   );
-  const lastName = validate.lastName(
-    data.payload ? data.payload.lastName : data.lastName
+  userPassword = validate.userPassword(
+    data.payload ? userPassword : data.userPassword
   );
-  const emailAddress = validate.emailAddress(
-    data.payload ? data.payload.emailAddress : data.emailAddress
-  );
-  const userPassword = validate.userPassword(
-    data.payload ? data.payload.userPassword : data.userPassword
-  );
-  const tcAgreement = validate.tcAgreement(
-    data.payload ? data.payload.tcAgreement : data.tcAgreement
+  tcAgreement = validate.tcAgreement(
+    data.payload ? tcAgreement : data.tcAgreement
   );
 
   if (

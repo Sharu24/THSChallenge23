@@ -69,10 +69,10 @@ const unifiedServer = (request, response) => {
 
     // Construct Response data
     const data = {
-      trimmedPath: trimmedPath,
-      queryObject: queryObject,
-      method: method,
-      headers: headers,
+      trimmedPath,
+      queryObject,
+      method,
+      headers,
       payload: bodyData ? helpers.parse(bodyData) : {}
     };
 

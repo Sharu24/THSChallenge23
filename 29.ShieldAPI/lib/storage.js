@@ -1,8 +1,11 @@
 const fs = require("fs");
 const { getFilePath } = require("./config");
 const helpers = require("./helpers");
+const util = require("util");
 
 const lib = {};
+
+const writeFile = util.promisify(fs.writeFile);
 
 //-----------------------------------------------------------------------------
 // Function to check if a File Exists
@@ -18,26 +21,35 @@ lib.exists = (dir, fileName, callback) => {
 //-----------------------------------------------------------------------------
 // Function to create a new file and write data into it
 //-----------------------------------------------------------------------------
-lib.create = (dir, fileName, fileData, callback) => {
-  fs.open(getFilePath(dir, fileName), "wx", (err, fileDescriptor) => {
-    if (!err && fileDescriptor) {
-      const stringData = JSON.stringify(fileData);
-      fs.writeFile(fileDescriptor, stringData, err => {
-        if (!err) {
-          fs.close(fileDescriptor, err => {
-            /* Everything passes */
-            if (!err) callback(false);
-            else callback("Error Closing the File");
-          });
-        } else {
-          callback("Error is writing into the file - ", err);
-        }
-      });
-    } else {
-      callback("Could not create the file or there may be one already");
-    }
-  });
+lib.create = async (dir, fileName, fileData, callback) => {
+  try {
+    await writeFile(getFilePath(dir, fileName), JSON.stringify(fileData));
+    callback(false);
+  } catch (error) {
+    callback("Error is writing into the file - ", error);
+  }
 };
+
+// lib.create = (dir, fileName, fileData, callback) => {
+//   fs.open(getFilePath(dir, fileName), "wx", (err, fileDescriptor) => {
+//     if (!err && fileDescriptor) {
+//       const stringData = JSON.stringify(fileData);
+//       fs.writeFile(fileDescriptor, stringData, err => {
+//         if (!err) {
+//           fs.close(fileDescriptor, err => {
+//             /* Everything passes */
+//             if (!err) callback(false);
+//             else callback("Error Closing the File");
+//           });
+//         } else {
+//           callback("Error is writing into the file - ", err);
+//         }
+//       });
+//     } else {
+//       callback("Could not create the file or there may be one already");
+//     }
+//   });
+// };
 
 //------------------------------------------------------
 // Function to read a file
