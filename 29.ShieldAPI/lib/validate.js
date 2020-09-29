@@ -1,11 +1,17 @@
 const validate = {};
 
+//-----------------------------------------------------------------------------
+// Regular Expressions Definitions
+//-----------------------------------------------------------------------------
 const specialSet = "!@#$%&*_";
 const RE_CHAR_ONLY = /^[a-zA-Z]+$/;
 const RE_NUM_ONLY = /^[0-9]+$/;
 const RE_EMAIL = /^[\w]+[\-_.]*[\w]+@[\w]+\.[a-zA-Z]+$/;
 const RE_PASSWORD = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&*_]).{8,15}$/;
 
+//-----------------------------------------------------------------------------
+// Objectify / Standardize the Response before returning back
+//-----------------------------------------------------------------------------
 var getObj = (valid, value, message) => {
   return {
     valid: valid,
@@ -14,6 +20,9 @@ var getObj = (valid, value, message) => {
   };
 };
 
+//-----------------------------------------------------------------------------
+// Basic String Validattions ( firstName, lastName etc)
+//-----------------------------------------------------------------------------
 var userName = name => {
   if (!name || typeof name !== "string") {
     return getObj(false, name, "First/Last Name Should be passed as String");
@@ -31,6 +40,9 @@ var userName = name => {
 validate.firstName = userName;
 validate.lastName = userName;
 
+//-----------------------------------------------------------------------------
+// Validate a 10 digit Mobile Number ( No Regional Code)
+//-----------------------------------------------------------------------------
 validate.mobileNumber = num => {
   if (!num || typeof num !== "string") {
     return getObj(false, name, "Mobile Number should be passed");
@@ -45,6 +57,11 @@ validate.mobileNumber = num => {
   }
 };
 
+//-----------------------------------------------------------------------------
+// A Strong Email Validations check
+// 1. Email address should not exceed 320 characters
+// 2. should follow standard notation [ Eg: xx.xx@xx.xx ]
+//-----------------------------------------------------------------------------
 validate.emailAddress = email => {
   if (!email || typeof email !== "string") {
     return getObj(false, email, "Email should be a string");
@@ -59,6 +76,12 @@ validate.emailAddress = email => {
   }
 };
 
+//-----------------------------------------------------------------------------
+// A String Password Validation check
+// 1. Minimum of 8 characters and maximum of 15 chars
+// 2. Should have atleast 1 lowercase, 1 uppercase, 1 number
+// 3. Should ahve atleast 1 special char ( check reg exp )
+//-----------------------------------------------------------------------------
 validate.userPassword = pass => {
   if (!pass || typeof pass !== "string") {
     return getObj(false, pass, "Password should be a string");
@@ -76,6 +99,9 @@ validate.userPassword = pass => {
   }
 };
 
+//-----------------------------------------------------------------------------
+// Validate a Boolean input
+//-----------------------------------------------------------------------------
 var bool = boolVal => {
   if (typeof boolVal !== "boolean") {
     return getObj(false, boolVal, "Agreement should be Boolean(true/false)");
@@ -86,6 +112,9 @@ var bool = boolVal => {
 
 validate.tcAgreement = bool;
 
+//-----------------------------------------------------------------------------
+// Validate a Query Param
+//-----------------------------------------------------------------------------
 validate.queryParam = str => {
   return getObj(true, str, null);
 };

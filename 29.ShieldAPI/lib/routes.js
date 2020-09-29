@@ -7,9 +7,20 @@ const helpers = require("./helpers");
 const { acceptableMethods, statusCodes } = require("./config");
 const { validate } = require("./validate");
 
+const {
+  SUCCESS,
+  BAD_REQUEST,
+  NOT_FOUND,
+  INVALID_METHOD,
+  SERVER_ERROR
+} = statusCodes;
+
 // Define Handlers
 const routes = {};
 
+//-----------------------------------------------------------------------------
+//Handlers for /users
+//-----------------------------------------------------------------------------
 // Validate if the request Method is valid for /users
 // Invoke Route Handlers
 routes.users = (data, callback) => {
@@ -19,17 +30,16 @@ routes.users = (data, callback) => {
     try {
       routes._users[method](data, callback);
     } catch (error) {
-      callback(statusCodes.INVALID_METHOD, {
-        Error: "Invalid Http/s method for the Specified Route"
-      });
+      callback(INVALID_METHOD, "Invalid Http/s method for the Route");
     }
   } else {
-    callback(statusCodes.INVALID_METHOD, {
-      Error: "Invalid Http/s method, Request Failed"
-    });
+    callback(INVALID_METHOD, "Invalid Http/s method, Request Failed");
   }
 };
 
+//-----------------------------------------------------------------------------
+//Handlers for /hobby
+//-----------------------------------------------------------------------------
 // Validate if the request Method is valid for /users
 // Invoke Route Handlers
 routes.hobby = (data, callback) => {
@@ -39,17 +49,16 @@ routes.hobby = (data, callback) => {
     try {
       routes._hobby[method](data, callback);
     } catch (error) {
-      callback(statusCodes.INVALID_METHOD, {
-        Error: "Invalid Http/s method for the Specified Route"
-      });
+      callback(INVALID_METHOD, "Invalid Http/s method for the Specified Route");
     }
   } else {
-    callback(statusCodes.INVALID_METHOD, {
-      Error: "Invalid Http/s method, Request Failed"
-    });
+    callback(INVALID_METHOD, "Invalid Http/s method, Request Failed");
   }
 };
 
+//-----------------------------------------------------------------------------
+//Handlers for /age
+//-----------------------------------------------------------------------------
 // Validate if the request Method is valid for /age
 // Invoke Route Handlers
 routes.age = (data, callback) => {
@@ -58,57 +67,58 @@ routes.age = (data, callback) => {
     try {
       routes._age[method](data, callback);
     } catch (error) {
-      callback(statusCodes.INVALID_METHOD, {
-        Error: "Invalid Http/s method for specified route"
-      });
+      callback(INVALID_METHOD, "Invalid Http/s method for specified route");
     }
   } else {
-    callback(statusCodes.INVALID_METHOD, {
-      Error: "Invalid Http/s method, Request Failed"
-    });
+    callback(INVALID_METHOD, "Invalid Http/s method, Request Failed");
   }
 };
 
+//-----------------------------------------------------------------------------
+//Handlers for /load
+//-----------------------------------------------------------------------------
 routes.load = (data, callback) => {
   const { method } = data;
   if (acceptableMethods.indexOf[method] !== -1) {
     try {
       routes._load[method](data, callback);
     } catch (error) {
-      console.log(error);
-      callback(statusCodes.INVALID_METHOD, {
-        Error: "Invalid Http/s method for the Specified Route"
-      });
+      // console.log(error);
+      callback(INVALID_METHOD, "Invalid Http/s method for the Specified Route");
     }
   } else {
-    callback(statusCodes.INVALID_METHOD, {
-      Error: "Invalid http/s method, Request Failed"
-    });
+    callback(INVALID_METHOD, "Invalid http/s method, Request Failed");
   }
 };
 
+//-----------------------------------------------------------------------------
+//Handlers for /load
+//-----------------------------------------------------------------------------
 routes._load = {};
 
-routes._load.post = (data, callback) => {
+//-----------------------------------------------------------------------------
+// Bulk Load Avengers Data
+// Request Object - Array of Avenger Objects
+//-----------------------------------------------------------------------------
+routes._load.post = async (data, callback) => {
   //POST - To upload a bulk of Avengers into the team
   //Request data - an Array of Objects
-  let response = {};
-  if (Array.isArray(data.payload)) {
+  try {
+    if (!Array.isArray(data.payload))
+      throw { Error: "Bulk load has to be an Array" };
+
+    let response = {};
     let payloadSize = data.payload.length;
     data.payload.forEach(user =>
       routes._users.post(user, (status, payload) => {
         response[user.mobileNumber] = payload;
         if (Object.keys(response).length === payloadSize) {
-          callback(statusCodes.SUCCESS, {
-            Success: response
-          });
+          callback(SUCCESS, response);
         }
       })
     );
-  } else {
-    callback(statusCodes.BAD_REQUEST, {
-      Error: "Bulk load has to be an Array"
-    });
+  } catch (error) {
+    callback(SERVER_ERROR, error.Error || "Unable to Bulk load data. #Admin");
   }
 };
 
@@ -120,52 +130,29 @@ routes._users = {};
 // Optional Data : None
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
-routes._users.get = (data, callback) => {
-  //---
-  // GET - To get an Avenger,
-  // Request Query Param - Mobile Number, Request Body - NA
-  let { mobileNumber } = data.queryObject.mobileNumber;
-  if (mobileNumber) {
-    mobileNumber = validate.mobileNumber(mobileNumber);
-    if (mobileNumber.value) {
-      _data.read("users", mobileNumber.value, (err, data) => {
-        if (!err && data) {
-          delete data.hashPassword;
-          callback(statusCodes.SUCCESS, data);
-        } else {
-          callback(statusCodes.BAD_REQUEST, {
-            Error: "There is no user with this Phone Number"
-          });
-        }
+routes._users.get = async (data, callback) => {
+  // GET - An Avenger | All Avengers
+  try {
+    const isQuery = Object.keys(data.queryObject).length;
+    const isBody = Object.keys(data.payload).length;
+    if (isQuery && !isBody) {
+      const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+      if (!mobileNumber.valid) throw "Mobile Number not Passed";
+      let userData = await _data.read("users", mobileNumber.value);
+      if (userData.Error) throw userData;
+      callback(SUCCESS, userData);
+    } else if (!isQuery) {
+      let fileNames = await _data.readdir("users");
+      if (fileNames.Error) throw fileNames;
+      let promiseArr = [];
+      fileNames.forEach(fileName => {
+        promiseArr.push(_data.read("users", fileName.split(".")[0]));
       });
+      const userData = await Promise.all(promiseArr);
+      callback(SUCCESS, userData);
     }
-  }
-  //---
-  // GET - To get ALL Avengers,
-  // Request Query Param - NA, Request Body - NA
-  else {
-    // Since there are multiple Data Storage Objects(Files)
-    // And they all needs to be fetched and displayed at once,
-    // Promisify all the reads from the Data Storage
-    // So that once the reads are complete, User Array Object will be sent back
-    _data
-      .readdirAsync("users")
-      .then(fileNames => {
-        return Promise.all(
-          fileNames.map(fileName =>
-            _data.readFileAsync("users", fileName.split(".")[0])
-          )
-        );
-      })
-      .then(files => {
-        callback(statusCodes.SUCCESS, files);
-      })
-      .catch(error => {
-        console.log(error);
-        callback(statusCodes.SERVER_ERROR, {
-          Error: "Something went while fetching Avengers data"
-        });
-      });
+  } catch (error) {
+    callback(SERVER_ERROR, "Error retrieving Avengers data. #Admin");
   }
 };
 
@@ -177,17 +164,15 @@ routes._users.get = (data, callback) => {
 // Optional : First name, Last name, Password, Email Address
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
-routes._users.put = (data, callback) => {
-  //---
+routes._users.put = async (data, callback) => {
   //--- This PUT block is Utilized to Update request body Object
-  //---
   let {
     firstName,
     lastName,
     mobileNumber,
     emailAddress,
     userPassword
-  } = data.payload;
+  } = data.payload ? data.payload : data;
 
   mobileNumber = validate.mobileNumber(mobileNumber);
   firstName = validate.firstName(firstName);
@@ -203,41 +188,29 @@ routes._users.put = (data, callback) => {
       userPassword.valid ||
       emailAddress.valid
     ) {
-      _data.read("users", mobileNumber.value, (err, userData) => {
-        if (!err && userData) {
-          if (firstName.valid) userData.firstName = firstName.value;
-          if (lastName.valid) userData.lastName = lastName.value;
-          if (emailAddress.valid) userData.emailAddress = emailAddress.value;
-          if (userPassword.valid)
-            userData.hPassword = helpers.hash(userPassword.value);
+      //Fetch User Attrbutes for the MobileNumber
+      try {
+        let userData = await _data.read("users", mobileNumber.value);
+        if (userData.Error) throw userData;
 
-          //--- Once User data is successfully retrived and
-          //--- temporarily written with updates, update the data back
-          _data.update("users", mobileNumber.value, userData, err => {
-            if (!err) {
-              callback(statusCodes.SUCCESS, {
-                Success: "Avenger Details Successfully Updated"
-              });
-            } else {
-              console.error(err);
-              callback(statusCodes.SERVER_ERROR, {
-                Error: "Server Error: Update failed"
-              });
-            }
-          });
-        } else {
-          callback(statusCodes.BAD_REQUEST, {
-            Error: "Avenger Does not Exists"
-          });
-        }
-      });
+        // Update only those attributes which are valid
+        if (firstName.valid) userData.firstName = firstName.value;
+        if (lastName.valid) userData.lastName = lastName.value;
+        if (emailAddress.valid) userData.emailAddress = emailAddress.value;
+        if (userPassword.valid)
+          userData.hPassword = helpers.hash(userPassword.value);
+
+        let updData = await _data.update("users", mobileNumber.value, userData);
+        if (updData.Error) throw response;
+        else callback(SUCCESS, "Avenger Details Successfullly Updated");
+      } catch (error) {
+        callback(SERVER_ERROR, error.Error | "Update failed");
+      }
     } else {
-      callback(statusCodes.BAD_REQUEST, {
-        Error: "Missing fields to update"
-      });
+      callback(BAD_REQUEST, "Missing fields to update");
     }
   } else {
-    callback(statusCodes.BAD_REQUEST, { Error: mobileNumber.message });
+    callback(BAD_REQUEST, mobileNumber.message);
   }
 };
 
@@ -247,33 +220,22 @@ routes._users.put = (data, callback) => {
 // Optional Data : None
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
-routes._users.delete = (data, callback) => {
-  // let {mobileNumber} = data.queryObject.mobileNumber;
+routes._users.delete = async (data, callback) => {
   const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
 
   if (mobileNumber.valid) {
-    _data.read("users", mobileNumber.value, (err, data) => {
-      if (!err && data) {
-        _data.delete("users", mobileNumber.value, err => {
-          if (!err) {
-            callback(statusCodes.SUCCESS, {
-              Success: `Avenger with mobile# ${mobileNumber.value} is terminated`
-            });
-          } else {
-            console.error(err);
-            callback(statusCodes.SERVER_ERROR, {
-              Error: "S.H.I.E.L.D Error: Avenger could not be deleted"
-            });
-          }
-        });
-      } else {
-        callback(statusCodes.BAD_REQUEST, {
-          Error: "Avenger Does not Exists"
-        });
-      }
-    });
+    try {
+      let response = await _data.delete("users", mobileNumber.value);
+      if (response.Error) throw response;
+      else callback(SUCCESS, `Avenger ref# ${mobileNumber.value} deleted`);
+    } catch (error) {
+      callback(
+        SERVER_ERROR,
+        error.Error || "Cannot Delete Avenger. Contact Admin"
+      );
+    }
   } else {
-    callback(statusCodes.SUCCESS, { Error: "Mobile Number is invalid" });
+    callback(BAD_REQUEST, "Mobile Number is invalid");
   }
 };
 
@@ -284,7 +246,7 @@ routes._users.delete = (data, callback) => {
 //                              Terms and Conditions Agreement
 //Optional data = none
 //-----------------------------------------------------------------------------
-routes._users.post = (data, callback) => {
+routes._users.post = async (data, callback) => {
   let {
     firstName,
     lastName,
@@ -292,7 +254,7 @@ routes._users.post = (data, callback) => {
     emailAddress,
     userPassword,
     tcAgreement
-  } = data.payload;
+  } = data.payload ? data.payload : data;
 
   //--- check if all the required fields are sent from the paylaod
   mobileNumber = validate.mobileNumber(
@@ -318,44 +280,25 @@ routes._users.post = (data, callback) => {
     userPassword.valid &&
     tcAgreement.valid
   ) {
-    _data.exists("users", mobileNumber.value, err => {
-      if (err) {
-        //--- Hash the password
-        const hashPassword = helpers.hash(userPassword.value);
-        if (hashPassword) {
-          //--- Create the Final User Object to store in the disk
-          const userObject = {
-            firstName: firstName.value,
-            lastName: lastName.value,
-            mobileNumber: mobileNumber.value,
-            emailAddress: emailAddress.value,
-            hashPassword: hashPassword,
-            tcAgreement: tcAgreement.value,
-            _id: Date.now()
-          };
-          _data.create("users", mobileNumber.value, userObject, err => {
-            if (!err) {
-              callback(statusCodes.SUCCESS, {
-                Success: `Avenger ${firstName.value} reachable at ${mobileNumber.value} is Successfully Registered`
-              });
-            } else {
-              console.log(err);
-              callback(statusCodes.SERVER_ERROR, {
-                Error:
-                  "Avenger could not be created. Retry/Contact @S.H.I.E.L.D"
-              });
-            }
-          });
-        } else {
-          callback(statusCodes.SERVER_ERROR, {
-            Error: "Could Not Crypt the Password. Retry/Contact @S.H.I.E.L.D"
-          });
-        }
-      } else
-        callback(statusCodes.BAD_REQUEST, {
-          Error: `Avenger with mobile# ${mobileNumber.value} already exists`
-        });
-    });
+    try {
+      const userObject = {
+        firstName: firstName.value,
+        lastName: lastName.value,
+        mobileNumber: mobileNumber.value,
+        emailAddress: emailAddress.value,
+        hashPassword: helpers.hash(userPassword.value),
+        tcAgreement: tcAgreement.value,
+        _id: Date.now()
+      };
+      let response = await _data.exists("users", mobileNumber.value);
+      if (!response.Error) throw "Avenger Already Exists";
+      response = await _data.create("users", mobileNumber.value, userObject);
+      if (!response.Error)
+        callback(SUCCESS, `Welcome Avenger ${lastName.value}!`);
+      else throw response;
+    } catch (error) {
+      callback(SERVER_ERROR, error || "Avenger couldn't be created. #Admin");
+    }
   } else {
     let errorMessage = {};
     if (!firstName.valid) errorMessage.firstName = firstName.message;
@@ -365,7 +308,7 @@ routes._users.post = (data, callback) => {
     if (!userPassword.valid) errorMessage.userPassword = userPassword.message;
     if (!tcAgreement.valid) errorMessage.tcAgreement = tcAgreement.message;
 
-    callback(statusCodes.BAD_REQUEST, { Error: errorMessage });
+    callback(BAD_REQUEST, errorMessage);
   }
 };
 
@@ -378,39 +321,37 @@ routes._age = {};
 // Optional Data : None
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
-routes._age.get = (data, callback) => {
-  const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+routes._age.get = async (data, callback) => {
+  try {
+    const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+    if (!mobileNumber.valid) throw { Error: "Enter Valid Mobile Number" };
 
-  if (mobileNumber.valid) {
-    _data.read("users", mobileNumber.value, (error, data) => {
-      if (!error && data) {
-        let currentDate = new Date(Date.now());
-        let since = {};
-        if (currentDate >= data._id) {
-          since = helpers._getDuration(data._id, currentDate);
-        } else {
-          callback(statusCodes.BAD_REQUEST, {
-            Error: "An Avenger from future !! #EndGame"
-          });
-          return;
-        }
+    let userData = await _data.read("users", mobileNumber.value);
+    if (userData.Error) throw { Error: "Avenger Not Found. #Register" };
+    let currentDate = new Date(Date.now());
+    let since = {};
+    if (currentDate >= userData._id) {
+      since = helpers._getDuration(userData._id, currentDate);
+    } else {
+      callback(BAD_REQUEST, "An Avenger from future !! #EndGame");
+      return;
+    }
 
-        let responseMsg = "";
-        if (since.years || since.months || since.days) {
-          responseMsg = `Dear ${data.firstName}, You have been an Avenger since `;
-          responseMsg += since.years ? since.years + " years, " : "";
-          responseMsg += since.months ? since.months + " months, " : "";
-          responseMsg += since.days === 1 ? "A day" : since.days + " days";
-        } else {
-          responseMsg = `Avenger ${data.firstName}, Its your first day at office !! `;
-        }
-        callback(statusCodes.SUCCESS, { Success: responseMsg });
-      } else {
-        callback(statusCodes.BAD_REQUEST, {
-          Error: "Avenger Does not exist. Please register."
-        });
-      }
-    });
+    let responseMsg = "";
+    if (since.years || since.months || since.days) {
+      responseMsg = `Dear ${userData.firstName}, You have been an Avenger since `;
+      responseMsg += since.years ? since.years + " years, " : "";
+      responseMsg += since.months ? since.months + " months, " : "";
+      responseMsg += since.days === 1 ? "A day" : since.days + " days";
+    } else {
+      responseMsg = `Avenger ${userData.firstName}, Its your first day at office !! `;
+    }
+    callback(SUCCESS, responseMsg);
+  } catch (error) {
+    callback(
+      SERVER_ERROR,
+      error.Error || "Unable to Fetch Avenger Experience. #Admin"
+    );
   }
 };
 
@@ -425,84 +366,73 @@ routes._hobby = {};
 // Optional : none
 // Its a Private Route, Only logged in users can query user data
 //-----------------------------------------------------------------------------
-routes._hobby.put = (data, callback) => {
-  //---
+routes._hobby.put = async (data, callback) => {
   //--- This PUT block is Utilized to Update Hobbies
-  if (data.queryObject.mobileNumber) {
+  try {
     const mobileNumber = validate.mobileNumber(data.queryObject.mobileNumber);
+    if (!mobileNumber.valid) throw { Error: "Mobile Number is Invalid" };
 
-    if (mobileNumber.valid) {
-      //---
-      // PUT - To Add or Append Hobbies
-      // If Hobbies are bassed in the request body than the same will be evaluated.
-      // If Hobbies were already added, it will append additional values if any
-      // If hobbies were never added it will just add the Hobby Array
-      //---
-      if (data.payload.hobbies && !data.queryObject.hobbies) {
-        // Validate Hobbies
-        _data.append("users", mobileNumber.value, data.payload, error => {
-          if (!error) {
-            callback(statusCodes.SUCCESS, {
-              Success: "Data Appended Successfully"
-            });
-          } else {
-            callback(statusCodes.SERVER_ERROR, {
-              Error: error
-            });
-          }
-        });
-      }
-      //---
-      // PUT - To Delete a Hobby
-      // A Hobby for a registerd Avenger is passed in request query parameters
-      // Removes the Hobby value
-      //---
-      else if (data.queryObject.hobbies) {
-        _data.remove(
-          "users",
-          mobileNumber.value,
-          "hobbies",
-          data.queryObject.hobbies,
-          error => {
-            if (!error) {
-              callback(statusCodes.SUCCESS, {
-                Success: "Avenger Hobbies were Removed Successfully"
-              });
-            } else {
-              callback(statusCodes.BAD_REQUEST, {
-                Error: error
-              });
-            }
-          }
-        );
-      } else {
-        callback(statusCodes.BAD_REQUEST, {
-          Error: "Invalid request - Hobbies needs to be passed"
-        });
-      }
+    let queryHob = data.queryObject.hobbies;
+    if (data.payload.hobbies && !queryHob) {
+      //
+      let resp = await _data.append("users", mobileNumber.value, data.payload);
+      if (resp.Error) throw resp;
+      else callback(SUCCESS, "Data Appended Successfully");
+    } else if (queryHob) {
+      //
+      let mobile = mobileNumber.value;
+      let resp = await _data.remove("users", mobile, "hobbies", queryHob);
+      if (resp.Error) throw resp;
+      else callback(SUCCESS, "Avenger Hobbies are Removed");
     } else {
-      callback(statusCodes.BAD_REQUEST, {
-        Error: "Invalid request - Mobile Number is Invalid"
-      });
+      callback(BAD_REQUEST, "Hobbies needs to be passed");
     }
-  } else {
-    callback(statusCodes.BAD_REQUEST, {
-      Error: "Invalid request - Please Pass Mobile Number"
-    });
+  } catch (error) {
+    // console.log(error);
+    callback(
+      SERVER_ERROR,
+      error.Error || "Cannot Append Avenger Hobbies. Contact Admin"
+    );
   }
 };
 
-routes.login = (data, callback) => {
-  callback(statusCodes.SUCCESS, { Success: "Login Successfull" });
-};
-
-routes.logout = (data, callback) => {
-  callback(statusCodes.SUCCESS, { Success: "Logout Successfull" });
-};
-
+//-----------------------------------------------------------------------------
+// Handle Routes where users have entered a Invalid Page
+//-----------------------------------------------------------------------------
 routes.notfound = (data, callback) => {
-  callback(statusCodes.NOT_FOUND, {
-    Error: "Invalid Route in the URL. Please contact S.H.I.E.L.D"
+  callback(NOT_FOUND, "Invalid Route in the URL. #Admin");
+};
+
+//-----------------------------------------------------------------------------
+// Handle Routes where users have entered a Invalid Page
+//-----------------------------------------------------------------------------
+
+routes.home = (data, callback) => {
+  const { method } = data;
+  if (acceptableMethods.indexOf[method] !== -1) {
+    try {
+      routes._home[method](data, callback);
+    } catch (error) {
+      // console.log(error);
+      callback(INVALID_METHOD, "Invalid Http/s method for the Specified Route");
+    }
+  } else {
+    callback(INVALID_METHOD, "Invalid http/s method, Request Failed");
+  }
+};
+
+routes._home = {};
+//-----------------------------------------------------------------------------
+// Handlers for /home.get
+// Display a HTML Page
+//-----------------------------------------------------------------------------
+routes._home.get = (data, callback) => {
+  _data.read("html", "index", (error, htmlData) => {
+    if (!error && htmlData) {
+      callback(SUCCESS, htmlData);
+    } else {
+      callback(SERVER_ERROR, "Home Page Not Found");
+    }
   });
 };
 

@@ -1,5 +1,5 @@
 const crypto = require("crypto");
-const { getEnv } = require("./config");
+const { environments } = require("./config");
 
 const helpers = {};
 
@@ -8,7 +8,7 @@ const helpers = {};
 helpers.hash = str => {
   if (typeof str === "string" && str.length > 0) {
     const hash = crypto
-      .createHmac("sha256", getEnv.hashingSecret)
+      .createHmac("sha256", environments.hashingSecret)
       .update(str)
       .digest("hex");
     return hash;

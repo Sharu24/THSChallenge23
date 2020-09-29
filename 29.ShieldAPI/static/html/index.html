@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat&display=swap"
+      rel="stylesheet"
+    />
+    <title>Welcome to Avengers API</title>
+    <style>
+      body {
+        font-family: "Montserrat", sans-serif;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <center>
+      <h1>Welcome To Avengers API</h1>
+      <table>
+        <tr>
+          <th>Description</th>
+          <th>Method</th>
+          <th>Path</th>
+          <th>Query Parameters</th>
+          <th>Request Body</th>
+        </tr>
+        <tr>
+          <td><strong>Register an Avenger</strong></td>
+          <td>POST</td>
+          <td>/users</td>
+          <td><em>NA</em></td>
+          <td>
+            { "firstName" : "Steve", "lastName": "Rogers", "mobileNumber":
+            "9876543210", "emailAddress": "captain@avengers.com",
+            "userPassword": "Ca@avenger123", "tcAgreement": true }
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Get all Avengers</strong></td>
+          <td>GET</td>
+          <td><a href="https://sharu24.herokuapp.com/users">/users</a></td>
+          <td><em>NA</em></td>
+          <td><em>NA</em></td>
+        </tr>
+        <tr>
+          <td><strong>Remove an Avenger</strong></td>
+          <td>DEL</td>
+          <td>/users</td>
+          <td>mobileNumber={10 digit mobile number}></td>
+          <td><em>NA</em></td>
+        </tr>
+        <tr>
+          <td><strong>Update Avenger Details</strong></td>
+          <td>PUT</td>
+          <td>/users</td>
+          <td><em>NA</em></td>
+          <td>
+            { "mobileNumber": "7777222211", "emailAddress":"hawkeye@avengers.in"
+            }
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Get An Avenger</strong></td>
+          <td>GET</td>
+          <td>
+            <a
+              href="https://sharu24.herokuapp.com/users/?mobileNumber=9999999999"
+              >/users</a
+            >
+          </td>
+          <td>mobileNumber={10 digit mobile number}></td>
+          <td><em>NA</em></td>
+        </tr>
+        <tr>
+          <td><strong>Add Hobbies to an Avenger</strong></td>
+          <td>PUT</td>
+          <td>/hobby</td>
+          <td>mobileNumber={10 digit mobile number}></td>
+          <td>{ "hobbies": ["Boozing"] }</td>
+        </tr>
+        <tr>
+          <td><strong>Delete Hobby of an Avenger</strong></td>
+          <td>PUT</td>
+          <td>/hobby</td>
+          <td>mobileNumber={10 digit mobile number}&hobbies={Hobby Name}></td>
+          <td><em>NA</em></td>
+        </tr>
+        <tr>
+          <td><strong>Avenger Experience</strong></td>
+          <td>GET</td>
+          <td>
+            <a
+              href="https://sharu24.herokuapp.com/users/?mobileNumber=9999999999"
+              >/age</a
+            >
+          </td>
+          <td>mobileNumber={10 digit mobile number}></td>
+          <td><em>NA</em></td>
+        </tr>
+        <tr>
+          <td><strong>Bulk Load Avengers</strong></td>
+          <td>POST</td>
+          <td>/load</td>
+          <td><em>NA</em></td>
+          <td>{Array of Avenger Objects}</td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>

@@ -1,162 +1,162 @@
-const fs = require("fs");
-const { getFilePath } = require("./config");
-const helpers = require("./helpers");
-const util = require("util");
+//--------------------------------------------
+// @Description: Storage Module
+//--------------------------------------------
 
-const lib = {};
+const fs = require("fs");
+const util = require("util");
+const helpers = require("./helpers");
+const { getFilePath } = require("./config");
 
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
+const access = util.promisify(fs.access);
+const readdir = util.promisify(fs.readdir);
 
+const lib = {};
 //-----------------------------------------------------------------------------
 // Function to check if a File Exists
 //-----------------------------------------------------------------------------
-lib.exists = (dir, fileName, callback) => {
-  fs.access(getFilePath(dir, fileName), fs.constants.F_OK, err => {
-    if (!err) callback(false);
-    else callback("The File Does not Exists / Error In Accessing the File");
-  });
+lib.exists = async (dir, fileName) => {
+  try {
+    let response = await access(getFilePath(dir, fileName), fs.constants.F_OK);
+    return {};
+  } catch (error) {
+    return { Error: "User Not Found / Unable to Access Storage. #Admin" };
+  }
 };
 
 //-----------------------------------------------------------------------------
 // Function to create a new file and write data into it
 //-----------------------------------------------------------------------------
-lib.create = async (dir, fileName, fileData, callback) => {
+lib.create = async (dir, fileName, fileData) => {
   try {
     await writeFile(getFilePath(dir, fileName), JSON.stringify(fileData));
-    callback(false);
+    return {};
   } catch (error) {
-    callback("Error is writing into the file - ", error);
+    return { Error: "Unable to write into the storage. #Admin" };
   }
 };
 
-//------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Function to read a file
-//------------------------------------------------------
-lib.read = async (dir, fileName, callback) => {
+//-----------------------------------------------------------------------------
+lib.read = async (dir, fileName) => {
+  try {
+    let fileData = await readFile(getFilePath(dir, fileName), "utf-8");
+    let parsedData = null;
+    if (dir !== "html") {
+      parsedData = helpers.parse(fileData);
+      if (parsedData.hashPassword) delete parsedData.hashPassword;
+    } else {
+      parsedData = fileData;
+    }
+    return parsedData;
+  } catch (error) {
+    return { Error: "Error while reading Files. #Admin" };
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Function to read a directory
+//-----------------------------------------------------------------------------
+
+lib.readdir = async dir => {
+  try {
+    let fileNames = await readdir(getFilePath(dir));
+    return fileNames;
+  } catch (error) {
+    return { Error: "Error while reading Directories. #Admin" };
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Function to update the file
+//-----------------------------------------------------------------------------
+lib.update = async (dir, fileName, fileData) => {
+  try {
+    await writeFile(getFilePath(dir, fileName), JSON.stringify(fileData));
+    return {};
+  } catch (error) {
+    return { Error: "Error while Updating Files. #Admin" };
+  }
+};
+
+//-----------------------------------------------------------------------------
+// Function to append to a file
+//-----------------------------------------------------------------------------
+lib.append = async (dir, fileName, appendData) => {
   try {
     const fileData = await readFile(getFilePath(dir, fileName), "utf-8");
-    callback(false, helpers.parse(fileData));
-  } catch (error) {
-    callback(error, null);
-  }
-};
+    let parsedData = helpers.parse(fileData);
+    let filterData = [];
 
-//------------------------------------------------------
-// Function to read all user Data
-//------------------------------------------------------
-// Promisify fs.readdir
-lib.readdirAsync = dir => {
-  return new Promise((resolve, reject) => {
-    fs.readdir(getFilePath(dir), (error, fileNames) => {
-      if (!error) resolve(fileNames);
-      else reject(error);
-    });
-  });
-};
-// Promisify fs.readFile
-lib.readFileAsync = (dir, file) => {
-  return new Promise((resolve, reject) => {
-    fs.readFile(getFilePath(dir, file), "utf-8", (error, fileData) => {
-      if (!error && fileData) {
-        const parsedData = helpers.parse(fileData);
-        if (parsedData.hashPassword) delete parsedData.hashPassword;
-        resolve(parsedData);
-      } else reject(error);
-    });
-  });
-};
-
-//------------------------------------------------------
-// Function to update the file
-//------------------------------------------------------
-lib.update = async (dir, fileName, fileData, callback) => {
-  try {
-    await writeFile(getFilePath(dir, fileName), JSON.stringify(fileData));
-    callback(false);
-  } catch (error) {
-    callback("Error in Updating the file - ", error);
-  }
-};
-
-//------------------------------------------------------
-// Function to append to a file
-//------------------------------------------------------
-lib.append = (dir, fileName, appendData, callback) => {
-  fs.readFile(getFilePath(dir, fileName), "utf-8", (error, fileData) => {
-    //---
-    if (!error && fileData) {
-      let parsedData = helpers.parse(fileData);
-      let filterData = [];
-      //--- If there are multiple attributes, loop them over
-      for (attr in appendData) {
-        //--- if its a new attribute directly append the data else evaluate values
-        if (!parsedData[attr]) {
-          parsedData[attr] = appendData[attr];
+    //--- For Multiple attributes, loop through
+    for (attr in appendData) {
+      //--- For new attributes, append
+      if (!parsedData[attr]) {
+        parsedData[attr] = appendData[attr];
+      } else {
+        //--- Pick Only additional values for an attribute
+        filterData = appendData[attr].filter(
+          value => !parsedData[attr].includes(value)
+        );
+        if (filterData.length) {
+          parsedData[attr] = parsedData[attr].concat(filterData);
         } else {
-          //--- Pick only additional values for an attribute !!!
-          filterData = appendData[attr].filter(
-            value => !parsedData[attr].includes(value)
-          );
-          if (filterData.length) {
-            parsedData[attr] = parsedData[attr].concat(filterData);
-          } else {
-            callback("There are no additional values to append");
-            return;
-          }
+          return { Error: "There are no additional values to append" };
         }
       }
-      //--- Stringify data to write back into the file
-      const stringData = JSON.stringify(parsedData);
-      //--- Append filtered data set into the file
-      fs.writeFile(getFilePath(dir, fileName), stringData, "utf-8", error => {
-        if (!error) {
-          callback(false);
-        } else callback("Unable to Append data");
-      });
-    } else callback("Error while Reading the Data");
-  });
+    }
+    //--- Append filtered data set into the file
+    parsedData = JSON.stringify(parsedData);
+    await writeFile(getFilePath(dir, fileName), parsedData, "utf-8");
+    return {};
+  } catch (error) {
+    // console.log(error);
+    return { Error: error || "Unable to Append Data" };
+  }
 };
 
-//------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Function to remove value of Array attribute
-//------------------------------------------------------
-lib.remove = async (dir, fileName, attr, value, callback) => {
+//-----------------------------------------------------------------------------
+lib.remove = async (dir, fileName, attr, value) => {
   try {
     const fileData = await readFile(getFilePath(dir, fileName), "utf-8");
     let parsedData = helpers.parse(fileData);
     if (parsedData[attr]) {
       let attrArray = parsedData[attr];
+      //--- if the value was found in the attribute
       if (attrArray.indexOf(value) !== -1) {
+        //--- Pick and Delete the attribute value from the array
         attrArray.splice(attrArray.indexOf(value), 1);
-        parsedData[attr] = attrArray;
+        //--- If there was only one value than its an empty array
+        //--- Delete the attribute if empty
+        if (attrArray.length) parsedData[attr] = attrArray;
+        else delete parsedData[attr];
+
         const stringData = JSON.stringify(parsedData);
-        try {
-          await writeFile(getFilePath(dir, fileName), stringData);
-          callback(false);
-        } catch (error) {
-          callback("Cannot update data attributes");
-        }
-      } else {
-        callback(`Value ${value} does not exists for ${attr}`);
-      }
-    } else {
-      callback(`Attrubute ${attr} does not exists `);
+
+        await writeFile(getFilePath(dir, fileName), stringData);
+        return {};
+      } else throw { Error: "Attribute Values Not Found" };
     }
   } catch (error) {
-    callback("Cannot Read the File");
+    return { Error: error || "Could not remove the user Attribute. #Admin" };
   }
 };
-//------------------------------------------------------
+//-----------------------------------------------------------------------------
 // Function to delete a file
-//------------------------------------------------------
-lib.delete = async (dir, fileName, callback) => {
+//-----------------------------------------------------------------------------
+lib.delete = async (dir, fileName) => {
   try {
-    await fs.unlink(getFilePath(dir, fileName));
-    callback(false);
+    await access(getFilePath(dir, fileName), fs.constants.F_OK);
+    await unlink(getFilePath(dir, fileName));
+    return {};
   } catch (error) {
-    callback("Error in Deleting the data");
+    // console.log(error);
+    return { Error: "Avenger Does not Exists" };
   }
 };
 

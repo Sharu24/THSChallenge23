@@ -8,19 +8,55 @@
 // Import all the Modules
 //-----------------------------------------------------------------------------
 const http = require("http");
+const https = require("https");
+const fs = require("fs");
 const url = require("url");
+const { getEnv } = require("./lib/config");
 const helpers = require("./lib/helpers");
+// const _data = require("./lib/data");
 const routes = require("./lib/routes");
-const { statusCodes, getObjectKey } = require("./lib/config");
 const stringDecoder = require("string_decoder").StringDecoder;
 
 const port = process.env.PORT || 4000;
 
 //-----------------------------------------------------------------------------
-//Create a http Server and handle requests and responses
+//Create A HTTP Server and handle requests and responses
 //-----------------------------------------------------------------------------
 
-const server = http.createServer((request, response) => {
+const httpServer = http.createServer((request, response) => {
+  unifiedServer(request, response);
+});
+//Listening on a Server
+httpServer.listen(port, () => {
+  // console.log(
+  //   `httpServer Listening on port ${getEnv.httpPort} in ${getEnv.envName}`
+  // );
+  console.log(`httpServer Listening on port ${port} in ${getEnv.envName}`);
+});
+
+//Create A HTTPS Server and handle requests and responses
+const httpsServerOptions = {
+  key: fs.readFileSync("./https/key.pem"),
+  cert: fs.readFileSync("./https/cert.pem")
+};
+const httpsServer = https.createServer(
+  httpsServerOptions,
+  (request, response) => {
+    unifiedServer(request, response);
+  }
+);
+//Listening on a Server
+// httpsServer.listen(getEnv.httpsPort, () => {
+//   console.log(
+//     `httpsServer Listening on port ${getEnv.httpsPort} in ${getEnv.envName}`
+//   );
+// });
+
+//-----------------------------------------------------------------------------
+// Invoke Appropriate Route Handlers
+//-----------------------------------------------------------------------------
+// Handle both http and https
+const unifiedServer = (request, response) => {
   // Get request data attributes
   var trimmedPath = url
     .parse(request.url, true)
@@ -32,7 +68,6 @@ const server = http.createServer((request, response) => {
   // Parsing request body
   const decoder = new stringDecoder("utf-8"); // constructor function
 
-  // Get the request body using request event emitters
   let bodyData = "";
   request.on("data", chunk => {
     bodyData += decoder.write(chunk);
@@ -64,29 +99,21 @@ const server = http.createServer((request, response) => {
       load: routes.load
     };
 
-    // Define path for / (home)
     if (!router[trimmedPath]) trimmedPath = "home";
 
-    // Set the ChoosenHandler to appropriate Handlers
     const chosenHandler =
       typeof router[trimmedPath] != "undefined"
         ? router[trimmedPath]
         : routes.notfound;
 
-    // Invoke the handler functon [Eg: route.user / route.login]
     chosenHandler(data, (statusCode, payload) => {
       statusCode = typeof statusCode === "number" ? statusCode : 200;
+      payload = typeof payload === "object" ? payload : {};
 
-      const statusKey = getObjectKey(statusCode);
-      let tempPayload = {};
-      tempPayload[statusKey] = payload;
-      payload =
-        typeof payload === 'object' ? tempPayload[statusKey] : tempPayload;
       response.statusCode = statusCode;
 
-      // Set the response Payload
       let payloadString = "";
-      if (/^<!DOCTYPE html>/.test(Object.values(payload).toString())) {
+      if (payload.html) {
         response.setHeader("Content-Type", "text/html");
         payloadString = payload.html;
       } else {
@@ -95,15 +122,7 @@ const server = http.createServer((request, response) => {
         response.setHeader("Content-Type", "application/json");
       }
 
-      // End the request-response cycle by returning back the payload
       response.end(payloadString);
     });
   });
-});
-
-//-----------------------------------------------------------------------------
-// Listen on port allocated port
-//-----------------------------------------------------------------------------
-server.listen(port, () => {
-  console.log(`Servers Listening on port ${port} in heroku`);
-});
+};
