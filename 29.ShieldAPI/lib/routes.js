@@ -426,14 +426,14 @@ routes._home = {};
 // Handlers for /home.get
 // Display a HTML Page
 //-----------------------------------------------------------------------------
-routes._home.get = (data, callback) => {
-  _data.read("html", "index", (error, htmlData) => {
-    if (!error && htmlData) {
-      callback(SUCCESS, htmlData);
-    } else {
-      callback(SERVER_ERROR, "Home Page Not Found");
-    }
-  });
+routes._home.get = async (data, callback) => {
+  try {
+    let htmlData = await _data.read("html", "index");
+    if (htmlData.Error) throw { Error: "Html Home Page Not Found. #Admin" };
+    else callback(SUCCESS, htmlData);
+  } catch (error) {
+    callback(SERVER_ERROR, error.Error || "Cannot fetch Home Page. #Admin");
+  }
 };
 
 module.exports = routes;

@@ -81,14 +81,13 @@ const server = http.createServer((request, response) => {
       let tempPayload = {};
       tempPayload[statusKey] = payload;
       payload =
-        typeof payload === 'object' ? tempPayload[statusKey] : tempPayload;
+        typeof payload === "object" ? tempPayload[statusKey] : tempPayload;
       response.statusCode = statusCode;
 
       // Set the response Payload
-      let payloadString = "";
-      if (/^<!DOCTYPE html>/.test(Object.values(payload).toString())) {
+      let payloadString = Object.values(payload).toString();
+      if (/^<!DOCTYPE html>/.test(payloadString)) {
         response.setHeader("Content-Type", "text/html");
-        payloadString = payload.html;
       } else {
         //Convert payload to a string as the response accepts only string
         payloadString = JSON.stringify(payload);
