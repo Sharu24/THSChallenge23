@@ -147,3 +147,30 @@
    }
 ]
 ```
+### Heroku Depoyment
+1. Create an account in Heroku
+2. npm init -y
+3. package.json
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+4. heroku login
+5. heroku create
+6. git add .
+7. git status
+   1. Should be clean
+8. git remote -v
+   1. This displays heroku URL with git URL's
+9.  git remote add heroku https://git.heroku.com/mysterious-wave-42132.git
+10. git add .
+11. git commit -m "added"
+12. git push heroku master
+13. heroku apps:rename sharu24

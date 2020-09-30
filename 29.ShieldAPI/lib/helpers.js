@@ -18,6 +18,26 @@ helpers.hash = str => {
 };
 
 //-----------------------------------------------------------------------------
+helpers.comparePassword = (newStr, hash) => {
+  if (typeof newStr === "string" && newStr.length > 0) {
+    if (helpers.hash(newStr) === hash) return true;
+    else return false;
+  }
+};
+
+helpers.getRandomToken = size => {
+  var token = "";
+  for (var i = 0; i < size; i++) {
+    var picker = Math.floor(Math.random() * 3);
+    if (picker === 0) token += Math.floor(Math.random() * 10);
+    else if (picker === 1)
+      token += String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+    else token += String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+  }
+  return token;
+};
+
+//-----------------------------------------------------------------------------
 //--- Parse Buffer String to get JSON Objects
 helpers.parse = message => {
   if (typeof message === "string") {
