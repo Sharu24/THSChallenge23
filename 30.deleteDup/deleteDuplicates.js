@@ -1,5 +1,5 @@
 // Can you all give me all possible ways of removing duplicated values in an Array ?
-// You can make use of ES6 array helper methods, sets , for loops.
+// You can make use of ES6 array helper methods, sets , for loops...
 
 var remDup1 = arr =>
   arr.filter(ele => arr.indexOf(ele) === arr.lastIndexOf(ele));
