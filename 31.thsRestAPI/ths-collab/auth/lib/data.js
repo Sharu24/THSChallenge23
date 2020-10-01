@@ -2,7 +2,7 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
-const { parseJsonToObject } = require("./helpers").parseJsonToObject;
+const { parseJsonToObject } = require("./helpers");
 
 const lib = {};
 
@@ -24,9 +24,9 @@ lib.create = async (dir, file, data) => {
     const fileName = lib.baseDir + dir + "/" + file + ".json";
     const stringData = JSON.stringify(data);
     await writeFile(fileName, stringData);
-    return Promise.resolve(false);
+    return Promise.resolve();
   } catch (error) {
-    console.error(error);
+    console.error(error); // debug
     return Promise.reject({ Error: "Couldn't write into Storage!" });
   }
 };
@@ -39,7 +39,8 @@ lib.read = async (dir, file) => {
     const parsedData = parseJsonToObject(fileData);
     return Promise.resolve(parsedData);
   } catch (error) {
-    return Promise.reject("Couldn't read from the Storage!");
+    console.error(error); // debug
+    // return Promise.reject();
   }
 };
 
@@ -49,9 +50,10 @@ lib.update = async (dir, file, data) => {
     const fileName = lib.baseDir + dir + "/" + file + ".json";
     const stringData = JSON.stringify(data);
     await writeFile(fileName, stringData);
-    return Promise.resolve(false);
+    return Promise.resolve();
   } catch (error) {
-    return Promise.reject({ Error: "Couldn't update the Storage" });
+    console.error(error); // debug
+    // return Promise.reject();
   }
 };
 
@@ -60,15 +62,16 @@ lib.delete = async (dir, file) => {
   try {
     const fileName = lib.baseDir + dir + "/" + file + ".json";
     await unlink(fileName);
-    return Promise.resolve(false);
+    return Promise.resolve();
   } catch (error) {
-    return Promise.reject({ Error: "Couldn't delete from Storage" });
+    console.error(error); // debug
+    // return Promise.reject();
   }
 };
 
 //------------------------------------------------------------------------------------------
 
-lib._create = async (dir, file) => {
+lib._create = async (dir, file, callback) => {
   try {
     const fileName = lib.baseDir + dir + "/" + file;
     const stringData = JSON.stringify(data);
@@ -79,38 +82,44 @@ lib._create = async (dir, file) => {
   }
 };
 
+lib._read = async (dir, file, callback) => {
+  try {
+    const fileName = lib.baseDir + dir + "/" + file;
+    const data = await readFile(fileName, "utf-8");
+    callback(data);
+  } catch (error) {
+    console.error(error);
+    callback("Error in reading the file");
+  }
+};
+
 //------------------------------------------------------------------------------------------
 // APPROACH 3
 //------------------------------------------------------------------------------------------
 
 //Function to create a new file and insert the data
-lib._create = async (dir, file, data) => {
-  try {
-    const fileName = lib.baseDir + dir + "/" + file + ".json";
-    const stringData = JSON.stringify(data);
-    await writeFile(fileName, stringData);
-    return Promise.resolve(false);
-  } catch (error) {
-    console.log("error - ", error);
-    return Promise.reject({ Error: "Couldn't write into Storage!" });
-  }
-};
-
-//------------------------------------------------------------------------------------------
-// APPROACH 2
-//------------------------------------------------------------------------------------------
-
-//Function to create a new file and insert the data
-lib.__create = (dir, file, data) => {
+lib.__create = async (dir, file, data) => {
   return new Promise((resolve, reject) => {
     const fileName = lib.baseDir + dir + "/" + file + ".json";
-    const stringData = JSON.stringify(data);
-    fs.writeFile(fileName, stringData, error => {
+    fs.writeFile(fileName, data, err => {
       if (!err) {
         resolve(false);
       } else {
-        console.log("error - ", error);
-        return Promise.reject({ Error: "Couldn't write into Storage!" });
+        reject("Error creating a new User");
+      }
+    });
+  });
+};
+
+lib.__read = async (dir, file) => {
+  return new Promise((resolve, reject) => {
+    const fileName = lib.baseDir + dir + "/" + file + ".json";
+    fs.readFile(fileName, "utf-8", (err, data) => {
+      if (!err && data) {
+        const parsedData = JSON.stringify(data);
+        resolve(parsedData);
+      } else {
+        reject("Could not read the file");
       }
     });
   });
@@ -150,9 +159,8 @@ lib.___create = (dir, file, data, callback) => {
   );
 };
 
-/*
 //Function to read a file and print the data
-lib.read = (dir, file, callback) => {
+lib.____read = (dir, file, callback) => {
   fs.readFile(
     lib.baseDir + dir + "/" + file + ".json",
     "utf-8",
@@ -169,7 +177,7 @@ lib.read = (dir, file, callback) => {
 
 //Function to Update the File Contents
 
-lib.update = (dir, file, data, callback) => {
+lib.____update = (dir, file, data, callback) => {
   //Open the Files
   fs.open(
     lib.baseDir + dir + "/" + file + ".json",
@@ -206,7 +214,7 @@ lib.update = (dir, file, data, callback) => {
 };
 
 //Delete the File
-lib.delete = (dir, file, callback) => {
+lib.____delete = (dir, file, callback) => {
   //Unlinking or deleting
   fs.unlink(lib.baseDir + dir + "/" + file + ".json", err => {
     if (!err) {
@@ -216,6 +224,5 @@ lib.delete = (dir, file, callback) => {
     }
   });
 };
-*/
 
 module.exports = lib;

@@ -23,7 +23,7 @@ handlers._users = {};
 //POST Method for /users
 //Required Data(Users Schema) from body : firstname,lastname,phone(unique),password,tosAgreement
 //OPtional Data : none
-handlers._users.post = (data, callback) => {
+handlers._users.post = async (data, callback) => {
   //Implement validation, check all required fields are filled out
   const firstName =
     typeof data.payload.firstName === "string" &&
@@ -51,37 +51,27 @@ handlers._users.post = (data, callback) => {
       ? true
       : false;
   if (firstName && lastName && phone && password && tosAgreement) {
-    //Make sure that user doesn't already exists
-    _data
-      .read("users", phone)
-      .then(fileData => {
-        console.log("Error", fileData);
-        callback(400, { Error: "User Already Exists" });
-      })
-      .catch(() => {
-        const hashedPassword = helpers.hash(password);
-        if (hashedPassword) {
-          //Create the Final User Object to store in the disk
-          const userObject = {
-            firstName: firstName,
-            lastName: lastName,
-            phone: phone,
-            hashedPassword: hashedPassword,
-            tosAgreement: true
-          };
-          //Save the User to Disk
-          _data
-            .create("users", phone, userObject)
-            .then(() => {
-              callback(200, { Success: "User Registered Successfully" });
-            })
-            .catch(() => {
-              callback(500, { Error: "Could not Create the New User" });
-            });
-        } else {
-          callback(400, { Error: "Couldn't Hash Password" });
-        }
-      });
+    try {
+      // Check if the user Already Exists
+      const fileData = await _data.read("users", phone);
+      if (fileData) return callback(400, { Error: "User already Exists" });
+
+      // Create user Object to store
+      const userObject = {
+        firstName,
+        lastName,
+        phone,
+        hashedPassword: helpers.hash(password),
+        tosAgreement: true
+      };
+
+      //Write the user data into storage
+      await _data.create("users", phone, userObject);
+      callback(200, { Success: "User Registered Successfully" });
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Could not Create the New User" });
+    }
   } else {
     callback(400, { Error: "Validation Failed/ Missing Fields" });
   }
@@ -92,7 +82,7 @@ handlers._users.post = (data, callback) => {
 //Required Data (Query Params) : Phone Number
 //Optional Data : none
 //It is a Private Route, Only logged in users can query user data
-handlers._users.get = (data, callback) => {
+handlers._users.get = async (data, callback) => {
   //Check if Phone Number is Valid
   const phone =
     typeof data.queryStringObject.phone === "string" &&
@@ -100,19 +90,19 @@ handlers._users.get = (data, callback) => {
       ? data.queryStringObject.phone.trim()
       : false;
   if (phone) {
-    //Look up for a user
-    _data
-      .read("users", phone)
-      .then(response => {
-        //Remove the password from the data
-        delete response.hashedPassword;
-        callback(200, response);
-      })
-      .catch(error => {
-        callback(400, {
-          Error: "There is no User available with this Phone Number."
-        });
-      });
+    try {
+      //Look up for a user
+      let parsedData = await _data.read("users", phone);
+      if (parsedData) {
+        delete parsedData.hashedPassword;
+        callback(200, parsedData);
+      } else {
+        callback(400, { Error: "User Does Not Exists" });
+      }
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Unable to fetch User Data" });
+    }
   } else {
     callback(400, { Error: "Validation Failed/ Missing Fields" });
   }
@@ -123,7 +113,7 @@ handlers._users.get = (data, callback) => {
 //Required Data (Body) : Phone Number
 //Optional Data : rest of the fields
 //It is a Private Route, Only logged in users can update user data
-handlers._users.put = (data, callback) => {
+handlers._users.put = async (data, callback) => {
   const phone =
     typeof data.payload.phone === "string" &&
     data.payload.phone.trim().length === 10
@@ -147,19 +137,19 @@ handlers._users.put = (data, callback) => {
       : false;
   if (phone) {
     if (firstName || lastName || password) {
-      _data
-        .read("users", phone)
-        .then(userData => {
-          //Update the Fields
-          if (firstName) userData.firstName = firstName;
-          if (lastName) userData.lastName = lastName;
-          if (password) userData.hashedPassword = helpers.hash(password);
-          return _data.update("users", phone, userData);
-        })
-        .then(() => {
-          callback(200, { Success: "User Data Updated." });
-        })
-        .catch(() => callback(400, { Error: "Specified User Doesnt Exist" }));
+      try {
+        const parsedData = await _data.read("users", phone);
+        // Check user updates
+        if (firstName) parsedData.firstName = firstName;
+        if (lastName) parsedData.lastName = lastName;
+        if (password) parsedData.hashedPassword = helpers.hash(password);
+        //write into the file
+        await _data.update("users", phone, parsedData);
+        callback(200, { Success: "User Data Updated Successfully" });
+      } catch (error) {
+        console.error(error);
+        callback(400, { Error: "User Does not Exists" });
+      }
     } else {
       callback(400, { Error: "Missing Fields to Update" });
     }
@@ -173,7 +163,7 @@ handlers._users.put = (data, callback) => {
 //Required Data (params) : Phone Number
 //Optional Data : none
 //It is a Private Route, Only logged in users can update user data
-handlers._users.delete = (data, callback) => {
+handlers._users.delete = async (data, callback) => {
   //Check if the phone is valid
   const phone =
     typeof data.queryStringObject.phone === "string" &&
@@ -181,12 +171,20 @@ handlers._users.delete = (data, callback) => {
       ? data.queryStringObject.phone.trim()
       : false;
   if (phone) {
-    //Look up the user
-    _data
-      .read("users", phone)
-      .then(() => _data.delete("users", phone))
-      .then(() => callback(200, { Success: "User Got Deleted Succesfully" }))
-      .catch(() => callback(400, { Error: "User Doesn't Exist" }));
+    try {
+      //check if the user exists
+      const parsedData = await _data.read("users", phone);
+      if (parsedData) {
+        //delete the user from storage
+        await _data.delete("users", phone);
+        callback(200, { Success: "User Deleted Successfully" });
+      } else {
+        callback(400, { Error: "User Does not Exists" });
+      }
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Error while Deleting the user" });
+    }
   } else {
     callback(400, { Error: "Validation Failed/Missing Required Fields" });
   }
@@ -209,7 +207,7 @@ handlers._tokens = {};
 // Token Post Method
 // Required Fields : phone, password
 // Optional Data : None
-handlers._tokens.post = (data, callback) => {
+handlers._tokens.post = async (data, callback) => {
   const phone =
     typeof data.payload.phone === "string" &&
     data.payload.phone.trim().length === 10
@@ -222,66 +220,83 @@ handlers._tokens.post = (data, callback) => {
       : false;
 
   if (phone && password) {
-    //look up for the user
-    let tokenObject = {};
-    _data
-      .read("users", phone)
-      .then(userData => {
+    try {
+      //Check if the user credentials matches with storage
+      const parsedData = await _data.read("users", phone);
+      if (parsedData) {
         const hashedPassword = helpers.hash(password);
-        if (userData.hashedPassword === hashedPassword) {
-          //generate a access token
+        if (hashedPassword === parsedData.hashedPassword) {
+          //create Token
           const tokenId = helpers.createRandomString("20");
-          if (tokenId) {
-            const expires = Date.now() * 1000 * 60 * 60;
-            tokenObject = {
-              phone: phone,
-              id: tokenId,
-              expires: expires
-            };
-            return _data.create("tokens", tokenId, tokenObject);
-          }
+          const expires = (Date.now() / 1000) * 60 * 60 * 1000;
+          //create token Object
+          const tokenObject = { phone, tokenId, expires };
+          // Store the token into storage
+          _data.create("tokens", tokenId, tokenObject);
+          callback(200, tokenObject);
         }
-      })
-      .then(() => callback(200, { Success: tokenObject }))
-      .catch(() => callback(500, { Error: "Server Error" }));
+      } else {
+        callback(400, { Error: "User Does not Exists" });
+      }
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Unable to create tokens" });
+    }
   } else {
     callback(400, { Error: "Missing required fields" });
   }
 };
 
 // Token Get Method
-handlers._tokens.get = (data, callback) => {
-  const token =
-    typeof data.queryStringObject.token === "string" &&
-    data.queryStringObject.token.trim().length === 20
-      ? data.queryStringObject.token.trim()
+handlers._tokens.get = async (data, callback) => {
+  const tokenId =
+    typeof data.queryStringObject.tokenId === "string" &&
+    data.queryStringObject.tokenId.trim().length === 20
+      ? data.queryStringObject.tokenId.trim()
       : false;
 
-  if (token) {
+  console.log(tokenId);
+  if (tokenId) {
     // check its a valid user
-    _data
-      .read("tokens", token)
-      .then(response => {
-        callback(200, response);
-      })
-      .catch(() => {
-        callback(400, { Error: "Not a valid Token" });
-      });
+    try {
+      const parsedData = await _data.read("tokens", tokenId);
+      if (parsedData) {
+        callback(200, parsedData);
+      } else {
+        callback(400, { Error: "Token Does not Exists" });
+      }
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Couldn't get the Token" });
+    }
   }
 };
 
 // Token Delete Method
-handlers._tokens.delete = (data, callback) => {
-  const token =
-    typeof data.queryStringObject.token === "string" &&
-    data.queryStringObject.token.trim().length === 20
-      ? data.queryStringObject.token.trim()
+handlers._tokens.delete = async (data, callback) => {
+  let tokenId = data.queryStringObject.tokenId;
+  tokenId =
+    typeof tokenId === "string" && tokenId.trim().length === 20
+      ? tokenId.trim()
       : false;
-  _data
-    .read("tokens", token)
-    .then(() => _data.delete("tokens", token))
-    .then(() => callback(200, "User Deleted Succesfully"))
-    .catch(() => callback(500, "User not deleted. Server Error"));
+
+  if (tokenId) {
+    try {
+      // check if the token exists
+      const parsedData = await _data.read("tokens", tokenId);
+      if (parsedData) {
+        await _data.delete("tokens", tokenId);
+        return callback(200, { Success: "Token Deleted Successfully" });
+      } else {
+        return callback(400, { Error: "The Token does not Exists" });
+      }
+    } catch (error) {
+      console.error(error);
+      callback(500, { Error: "Unable to delete tokens" });
+    }
+  } else {
+    callback(400, "Error: Entered Token is invalid");
+  }
 };
 
 // Token Put Method
