@@ -1,0 +1,9 @@
+Implementing REST ful APIs with core Node JS Modules
+
+1)Web Server
+2)URL - params,methods,path,body(payload)
+3)Build Router and Router Handlers
+
+To Create SSL Keys
+openssl req -newkey rsa:2048 -new -nodes -x509 -days 3650 -keyout key.pem -out cert.pem
+
