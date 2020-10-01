@@ -19,7 +19,6 @@ lib.create = async (dir, file, data) => {
     const fileName = lib.baseDir + dir + "/" + file + ".json";
     const stringData = JSON.stringify(data);
     await writeFile(fileName, stringData);
-    console.log("hmmmmmmmmasdasdasdasd");
     return Promise.resolve(false);
   } catch (error) {
     console.log("error - ", error);

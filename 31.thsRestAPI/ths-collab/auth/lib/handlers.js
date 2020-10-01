@@ -24,7 +24,6 @@ handlers._users = {};
 //Required Data(Users Schema) from body : firstname,lastname,phone(unique),password,tosAgreement
 //OPtional Data : none
 handlers._users.post = (data, callback) => {
-  console.log(data);
   //Implement validation, check all required fields are filled out
   const firstName =
     typeof data.payload.firstName === "string" &&
@@ -51,7 +50,6 @@ handlers._users.post = (data, callback) => {
     data.payload.tosAgreement === true
       ? true
       : false;
-  // console.log(typeof data.payload);
   if (firstName && lastName && phone && password && tosAgreement) {
     //Make sure that user doesn't already exists
     _data
@@ -156,7 +154,6 @@ handlers._users.put = (data, callback) => {
           if (firstName) userData.firstName = firstName;
           if (lastName) userData.lastName = lastName;
           if (password) userData.hashedPassword = helpers.hash(password);
-          console.log(userData, phone);
           return _data.update("users", phone, userData);
         })
         .then(() => {
@@ -213,7 +210,6 @@ handlers._tokens = {};
 // Required Fields : phone, password
 // Optional Data : None
 handlers._tokens.post = (data, callback) => {
-  console.log("I am getting hit");
   const phone =
     typeof data.payload.phone === "string" &&
     data.payload.phone.trim().length === 10
@@ -234,17 +230,14 @@ handlers._tokens.post = (data, callback) => {
         const hashedPassword = helpers.hash(password);
         if (userData.hashedPassword === hashedPassword) {
           //generate a access token
-          console.log("Passwords match");
           const tokenId = helpers.createRandomString("20");
           if (tokenId) {
-            console.log("Token Id : ", tokenId);
             const expires = Date.now() * 1000 * 60 * 60;
             tokenObject = {
               phone: phone,
               id: tokenId,
               expires: expires
             };
-            console.log("before .create");
             return _data.create("tokens", tokenId, tokenObject);
           }
         }
