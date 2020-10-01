@@ -2,16 +2,21 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
-const parseJsonToObject = require("./helpers").parseJsonToObject; //refactor later
+const { parseJsonToObject } = require("./helpers").parseJsonToObject;
 
 const lib = {};
 
+// Promisify all the Async 'fs' modules
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
 const unlink = util.promisify(fs.unlink);
 
 //Base Directory of the data folder
 lib.baseDir = path.join(__dirname, "/../.data/");
+
+//------------------------------------------------------------------------------------------
+// APPROACH 4
+//------------------------------------------------------------------------------------------
 
 //Function to create a new file and insert the data
 lib.create = async (dir, file, data) => {
@@ -21,7 +26,7 @@ lib.create = async (dir, file, data) => {
     await writeFile(fileName, stringData);
     return Promise.resolve(false);
   } catch (error) {
-    console.log("error - ", error);
+    console.error(error);
     return Promise.reject({ Error: "Couldn't write into Storage!" });
   }
 };
@@ -61,10 +66,62 @@ lib.delete = async (dir, file) => {
   }
 };
 
-/*
+//------------------------------------------------------------------------------------------
+
+lib._create = async (dir, file) => {
+  try {
+    const fileName = lib.baseDir + dir + "/" + file;
+    const stringData = JSON.stringify(data);
+    await writeFile(fileName, stringData);
+    callback(false);
+  } catch (error) {
+    callback("Error in writing into the file");
+  }
+};
+
+//------------------------------------------------------------------------------------------
+// APPROACH 3
+//------------------------------------------------------------------------------------------
 
 //Function to create a new file and insert the data
-lib.create = (dir, file, data, callback) => {
+lib._create = async (dir, file, data) => {
+  try {
+    const fileName = lib.baseDir + dir + "/" + file + ".json";
+    const stringData = JSON.stringify(data);
+    await writeFile(fileName, stringData);
+    return Promise.resolve(false);
+  } catch (error) {
+    console.log("error - ", error);
+    return Promise.reject({ Error: "Couldn't write into Storage!" });
+  }
+};
+
+//------------------------------------------------------------------------------------------
+// APPROACH 2
+//------------------------------------------------------------------------------------------
+
+//Function to create a new file and insert the data
+lib.__create = (dir, file, data) => {
+  return new Promise((resolve, reject) => {
+    const fileName = lib.baseDir + dir + "/" + file + ".json";
+    const stringData = JSON.stringify(data);
+    fs.writeFile(fileName, stringData, error => {
+      if (!err) {
+        resolve(false);
+      } else {
+        console.log("error - ", error);
+        return Promise.reject({ Error: "Couldn't write into Storage!" });
+      }
+    });
+  });
+};
+
+//------------------------------------------------------------------------------------------
+// APPROACH 1
+//------------------------------------------------------------------------------------------
+
+//Function to create a new file and insert the data
+lib.___create = (dir, file, data, callback) => {
   fs.open(
     lib.baseDir + dir + "/" + file + ".json",
     "wx",
@@ -93,6 +150,7 @@ lib.create = (dir, file, data, callback) => {
   );
 };
 
+/*
 //Function to read a file and print the data
 lib.read = (dir, file, callback) => {
   fs.readFile(
