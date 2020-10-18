@@ -56,14 +56,14 @@ const unifiedServer = (req, res) => {
 
   const decoder = new stringDecoder("utf-8");
 
-  let buffer = "";
+  let bufferData = "";
 
   req.on("data", data => {
-    buffer += decoder.write(data);
+    bufferData += decoder.write(data);
   });
 
   req.on("end", () => {
-    buffer += decoder.end();
+    bufferData += decoder.end();
 
     //Choose the handler where  request should go according to the route path ..
     const chosenHandler =
@@ -77,24 +77,53 @@ const unifiedServer = (req, res) => {
       queryStringObject: queryStringObject,
       method: method,
       headers: headers,
-      payload: helpers.parseJsonToObject(buffer)
+      payload: helpers.parseJsonToObject(bufferData)
     };
+
+    chosenHandler(data)
+      .then(response => {
+        //Use the statusCode called back by the handler or 200;
+        console.log("response ====");
+        console.log(response);
+
+        let statusCode =
+          typeof response.statusCode == "number" ? response.statusCode : 200;
+        //Use the payload called back by the handler or default to an empty object
+        let payload =
+          typeof response.payload == "string" || "object"
+            ? response.Message
+            : {};
+        //Convert the Payload to a string
+        payloadString = JSON.stringify(payload);
+        //Send the final Response
+        res.setHeader("Content-Type", "application/json");
+        res.writeHead(statusCode);
+        res.end(payloadString);
+      })
+      .catch(error => {
+        console.error(error);
+        res.setHeader("Content-Type", "application/json");
+        res.writeHead(500);
+        res.end("Server Error");
+      });
+
     //Route the request to the handler that we choosed
-    chosenHandler(data, (statusCode, payload) => {
-      //Use the statusCode called back by the handler or 200;
+    // chosenHandler(data, (statusCode, payload) => {
+    //   //Use the statusCode called back by the handler or 200;
 
-      statusCode = typeof statusCode == "number" ? statusCode : 200;
-      //Use the payload called back by the handler or default to an empty object
-      payload = typeof payload == "object" ? payload : {};
-      //Convert the Payload to a string
-      payloadString = JSON.stringify(payload);
-      //Send the final Response
-      res.setHeader("Content-Type", "application/json");
-      res.writeHead(statusCode);
-      res.end(payloadString);
+    //   let statusCode =
+    //     typeof response.statusCode == "number" ? resposne.statusCode : 200;
+    //   //Use the payload called back by the handler or default to an empty object
+    //   let payload = typeof response.payload == "object" ? response.payload : {};
+    //   //Convert the Payload to a string
+    //   payloadString = JSON.stringify(payload);
+    //   //Send the final Response
+    //   res.setHeader("Content-Type", "application/json");
+    //   res.writeHead(statusCode);
+    //   res.end(payloadString);
 
-      console.log(statusCode, payloadString);
-    });
+    //   console.log(statusCode, payloadString);
+    // });
   });
 };
 

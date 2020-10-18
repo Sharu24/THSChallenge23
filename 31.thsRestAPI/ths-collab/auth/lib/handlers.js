@@ -6,14 +6,17 @@ const helpers = require("./helpers");
 const handlers = {};
 
 //Router Handlers for /users
-handlers.users = (data, callback) => {
+handlers.users = data => {
   //When some access /users, now we need to identify HTTP Method
   const acceptableMethods = ["post", "get", "put", "delete"];
   // console.log(acceptableMethods.indexOf(data.method));
   if (acceptableMethods.indexOf(data.method) !== -1) {
-    handlers._users[data.method](data, callback);
+    return handlers._users[data.method](data);
   } else {
-    callback(405, { Error: "Invalid HTTP Method. Request Failed." });
+    return Promise.reject({
+      StatusCode: 500,
+      Message: "Invalid HTTP Method. Request Failed."
+    });
   }
 };
 
@@ -58,7 +61,7 @@ handlers._users.post = async (data, callback) => {
     // Check if the user Already Exists
     const fileData = await _data.read("users", phone);
     if (fileData) return callback(400, { Error: "User already Exists" });
-    
+
     // Create user Object to store
     const userObject = {
       firstName,
@@ -77,29 +80,52 @@ handlers._users.post = async (data, callback) => {
   }
 };
 
+var getaobj = (status, message) => {
+  if ((status = 500)) {
+    return Promise.reject({
+      statusCode: status,
+      Message: message
+    });
+  } else {
+    return Promise.resolve({
+      statusCode: status,
+      Message: message
+    });
+  }
+};
+
 //-----------------------------------------------------------------------------
 // GET Method for /users
 //Required Data (Query Params) : Phone Number
 //Optional Data : none
 //It is a Private Route, Only logged in users can query user data
-handlers._users.get = async (data, callback) => {
-  //Check if Phone Number is Valid
-  const phone =
-    typeof data.queryStringObject.phone === "string" &&
-    data.queryStringObject.phone.trim().length === 10
-      ? data.queryStringObject.phone.trim()
-      : false;
-  if (!phone) return callback(400, { Error: "Validation : Missing Fields" });
-
+handlers._users.get = async data => {
   try {
+    //Check if Phone Number is Valid
+    const phone =
+      typeof data.queryStringObject.phone === "string" &&
+      data.queryStringObject.phone.trim().length === 10
+        ? data.queryStringObject.phone.trim()
+        : false;
+    if (!phone)
+      return Promise.resolve({
+        statusCode: 400,
+        Message: "Missing Fields"
+      });
+
     //Look up for a user
     let parsedData = await _data.read("users", phone);
-    if (!parsedData) return callback(400, { Error: "User Does Not Exists" });
+    console.log(parsedData);
+    if (!parsedData)
+      return Promise.resolve({
+        statusCode: 400,
+        Message: "User Does Not Exists"
+      });
     delete parsedData.hashedPassword;
-    callback(200, parsedData);
+    return Promise.resolve({ statusCode: 200, Message: parsedData });
   } catch (error) {
     console.error(error);
-    callback(500, { Error: "Server Error: Unable to fetch User Data" });
+    Promise.reject({ statusCode: 500, Message: " Unable to fetch User Data" });
   }
 };
 
