@@ -4,16 +4,6 @@
   "description": "",
   "main": "1.primeAm.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "01": "node ./01.primeAm/",
-    "02": "cd ./02.goldenRatio/; python -m http.server 3002",
-    "03": "node ./03.multipleOf11/",
-    "04": "cd ./04.stopWatch/; python -m http.server 3004",
-    "05": "node ./05.xorCipher/",
-    "06": "node ./06.checkPrime/",
-    "07": "node ./07.splitEO/",
-    "08": "cd ./08.videoPlay/; python -m http.server 3008",
-    "09": "cd ./09.ascii/; python -m http.server 3009",
     "10": "node ./10.bubbleSort/",
     "11": "cd ./11.numConv/; python -m http.server 3011",
     "12": "node ./12.magix/",
@@ -33,11 +23,25 @@
     "26": "cd ./26.openWeather/; python -m http.server 3022",
     "27": "cd ./26.Calendar/; python -m http.server 3023",
     "28": "node ./28.RandomToken/",
-    "29": "cd ./29.ShieldAPI/; node ."
+    "29": "cd ./29.ShieldAPI/; node .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "01": "node ./01.primeAm/",
+    "02": "cd ./02.goldenRatio/; python -m http.server 3002",
+    "03": "node ./03.multipleOf11/",
+    "04": "cd ./04.stopWatch/; python -m http.server 3004",
+    "05": "node ./05.xorCipher/",
+    "06": "node ./06.checkPrime/",
+    "07": "node ./07.splitEO/",
+    "08": "cd ./08.videoPlay/; python -m http.server 3008",
+    "09": "cd ./09.ascii/; python -m http.server 3009"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "directory-tree": "^2.2.5",
+    "express": "^4.17.1",
+    "install": "^0.13.0",
+    "npm": "^6.14.8",
     "readline-sync": "^1.4.10"
   }
 }
