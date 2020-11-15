@@ -12,11 +12,11 @@ const elvs = [
   ["eight", "eight"],
   ["nine", "ninet"]
 ];
-const factors = {
+let factors = {
   2: "hundred",
   3: "thousand",
   5: "lakh",
-  7: "crore"
+  7: "crores"
 };
 
 var repeatChecker = 0;
@@ -59,8 +59,6 @@ while (1) {
     if (Object.keys(factors).indexOf(i.toString()) !== -1) {
       fact = factors[i];
     }
-    // console.log("factor = ", fact);
-
     if (digit !== 0) {
       if (repeatChecker === 1) {
         oneDigit = digit;
@@ -85,8 +83,6 @@ while (1) {
       (repeatChecker === 2 && i >= 2) ||
       i == input.length - 1
     ) {
-      //   console.log("d", digit, "rc = ", rc, ", i = ", i, ", t = ", temp);
-
       if (temp || repeatChecker === 3)
         temp =
           repeatChecker !== 3
@@ -97,7 +93,6 @@ while (1) {
 
       repeatChecker = 0;
       currencyText = temp + currencyText;
-      //   console.log(currencyText);
       temp = "";
     }
   }
