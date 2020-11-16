@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      * {
+        margin: 0.2rem;
+        padding: 0.2rem;
+        box-sizing: border-box;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+        font-size: 1rem;
+      }
+
+      #root {
+        width: 40vw;
+        min-width: 200px;
+        margin: 1% auto;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">Todos</div>
+  </body>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      init();
+    });
+
+    function editTask(id) {
+      let taskDiv = document.getElementById(id);
+      let taskInput = document.querySelector(`div#${id} input`);
+      let taskEdit = document.querySelector(`div#${id} button[name='edit']`);
+
+      console.log(taskEdit);
+
+      if (taskEdit.innerText === "Edit") {
+        taskEdit.innerText = "Save";
+        taskInput.removeAttribute("readonly");
+      } else {
+        taskEdit.innerText = "Edit";
+        taskInput.setAttribute("readonly", true);
+      }
+      addInput.focus();
+    }
+
+    function deleteTask(id) {
+      let todos = document.getElementById("todos");
+      var taskEle = document.getElementById(id);
+      todos.removeChild(taskEle);
+      addInput.focus();
+    }
+
+    function createTask(task) {
+      let todos = document.getElementById("todos");
+      let taskDiv = document.createElement("div");
+      taskDiv.id = "task";
+      let taskInput = document.createElement("input");
+      taskInput.value = task;
+      taskInput.setAttribute("readonly", true);
+      let taskEdit = document.createElement("button");
+      taskEdit.innerText = "Edit";
+      taskEdit.setAttribute("name", "edit");
+      let taskDelete = document.createElement("button");
+      taskDelete.innerText = "Delete";
+      taskDelete.setAttribute("name", "delete");
+
+      todos.appendChild(taskDiv);
+      taskDiv.appendChild(taskInput);
+      taskDiv.appendChild(taskEdit);
+      taskDiv.appendChild(taskDelete);
+
+      taskEdit.addEventListener("click", () => {
+        editTask(taskDiv.id);
+      });
+
+      taskDelete.addEventListener("click", () => {
+        deleteTask(taskDiv.id);
+      });
+    }
+
+    function init() {
+      let containerDiv = document.getElementById("root");
+      let addDiv = document.createElement("div");
+      addDiv.id = "add";
+
+      let addInput = document.createElement("input");
+      addInput.setAttribute("placeholder", "Add a todo task");
+      addInput.setAttribute("name", "task");
+
+      let addButton = document.createElement("button");
+      addButton.setAttribute("name", "add");
+      addButton.innerText = "Add";
+
+      let todosDiv = document.createElement("div");
+      todosDiv.id = "todos";
+
+      containerDiv.appendChild(addDiv);
+      addDiv.appendChild(addInput);
+      addDiv.appendChild(addButton);
+      containerDiv.appendChild(todosDiv);
+
+      addInput.focus();
+      addButton.addEventListener("click", () => {
+        createTask(addInput.value);
+        addInput.value = "";
+        addInput.focus();
+      });
+    }
+  </script>
+</html>
