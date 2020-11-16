@@ -52,6 +52,8 @@
         background-color: rgb(255, 159, 159);
       }
     </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/uuid/8.1.0/uuidv4.min.js"></script>
   </head>
   <body>
     <div id="root" style="font-size:1.4rem" }>Todos</div>
@@ -77,9 +79,16 @@
         taskInput.removeAttribute("readonly");
         taskInput.focus();
       } else {
+        let todosObj = window.localStorage.getItem("todos");
+        todosObj = JSON.parse(todosObj);
+        let key = Object.keys(todosObj).filter(key => todosObj[key] === id);
+        todosObj[key] = taskInput.value;
+        window.localStorage.setItem("todos", JSON.stringify(todosObj));
+
         taskDiv.id = taskInput.value;
         taskEdit.innerText = "Edit";
         taskInput.setAttribute("readonly", true);
+
         let addInput = document.getElementsByName("task");
         addInput[0].focus();
       }
@@ -92,6 +101,12 @@
       let todos = document.getElementById("todos");
       var taskEle = document.getElementById(id);
       todos.removeChild(taskEle);
+
+      let todosObj = window.localStorage.getItem("todos");
+      todosObj = JSON.parse(todosObj);
+      let key = Object.keys(todosObj).filter(key => todosObj[key] === id);
+      delete todosObj[key];
+      window.localStorage.setItem("todos", JSON.stringify(todosObj));
 
       let addInput = document.getElementsByName("task");
       addInput[0].focus();
@@ -121,6 +136,11 @@
       taskDiv.appendChild(taskInput);
       taskDiv.appendChild(taskEdit);
       taskDiv.appendChild(taskDelete);
+
+      let todosObj = window.localStorage.getItem("todos");
+      todosObj = JSON.parse(todosObj);
+      todosObj[uuidv4()] = task;
+      window.localStorage.setItem("todos", JSON.stringify(todosObj));
 
       taskEdit.addEventListener("click", () => {
         editTask(taskDiv.id);
@@ -156,6 +176,8 @@
       addDiv.appendChild(addInput);
       addDiv.appendChild(addButton);
       containerDiv.appendChild(todosDiv);
+
+      window.localStorage.setItem("todos", JSON.stringify({}));
 
       addInput.focus();
       addButton.addEventListener("click", () => {
